@@ -14,8 +14,8 @@ const ProtectedRoute = (props: IProps) => {
         return (
             <>
                 <Result
-                    status="403"
-                    title="403"
+                    status="404"
+                    title="404"
                     subTitle="Sorry, you are not authorized to access this page."
                     extra={<Link to={'/login'}><Button type="primary">Login now</Button></Link>}
                 />
