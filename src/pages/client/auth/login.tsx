@@ -11,12 +11,15 @@ const LoginPage = () => {
     const { notification, message } = App.useApp();
     const [LoginForm] = Form.useForm();
     const { setIsAuthenticated, setUser } = useCurrentApp();
-
     type FieldType = {
         email: string;
         password: string;
     };
-
+    const handleEnter = (e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.key === 'Enter' && !loading) {
+            LoginForm.submit();
+        }
+    }
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
         setLoading(true)
         const result = await loginAPI(values.email, values.password);
@@ -87,7 +90,7 @@ const LoginPage = () => {
                                     },
                                 ]}
                             >
-                                <Input.Password />
+                                <Input.Password onKeyDown={handleEnter} />
                             </Form.Item>
 
                             <Form.Item label={null}>
