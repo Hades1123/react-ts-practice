@@ -1,10 +1,12 @@
-import { createContext, useContext, useState } from "react"
+import { fetchAccountAPI } from "@/services/api";
+import { Spin } from "antd";
+import { createContext, useContext, useEffect, useState } from "react"
 
 interface IContextType {
     isAuthenticated: boolean;
     setIsAuthenticated: (v: boolean) => void;
     user: IUser | null;
-    setUser: (value: IUser) => void;
+    setUser: (value: IUser | null) => void;
     isAppLoading: boolean;
     setIsAppLoading: (v: boolean) => void;
 }
@@ -20,15 +22,32 @@ const ContextWrapper = (props: TProps) => {
     const [user, setUser] = useState<IUser | null>(null);
     const [isAppLoading, setIsAppLoading] = useState<boolean>(true);
 
+    useEffect(() => {
+        const fetchAccount = async () => {
+            const result = await fetchAccountAPI();
+            if (result.data) {
+                setUser(result.data.user);
+                setIsAuthenticated(true);
+            }
+            setIsAppLoading(false);
+        }
+        fetchAccount();
+    }, [])
+
     return (
         <>
-            <AppContext.Provider value={{
-                isAuthenticated, setIsAuthenticated,
-                user, setUser,
-                isAppLoading, setIsAppLoading,
-            }}>
-                {props.children}
-            </AppContext.Provider>
+            {!isAppLoading ?
+                <AppContext.Provider
+                    value={{
+                        isAuthenticated, setIsAuthenticated,
+                        user, setUser,
+                        isAppLoading, setIsAppLoading
+                    }}>
+                    {props.children}
+                </AppContext.Provider>
+                :
+                (<div className="h-[100vh] flex justify-center items-center"><Spin size="large" /></div>)
+            }
         </>
     )
 }
