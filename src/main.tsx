@@ -10,12 +10,19 @@ import BookPage from './pages/client/book.tsx';
 import AboutPage from './pages/client/about.tsx';
 import RegisterPage from './pages/client/auth/register.tsx';
 import LoginPage from './pages/client/auth/login.tsx';
+import { App } from 'antd';
+import HomePage from './pages/client/home.tsx';
+import { ContextWrapper } from './components/context/app.context.tsx';
 
 const router = createBrowserRouter([
 	{
 		path: "/",
 		element: <Layout />,
 		children: [
+			{
+				index: true,
+				element: <HomePage />,
+			},
 			{
 				path: "/book",
 				element: <BookPage />,
@@ -39,5 +46,9 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')!).render(
-	<RouterProvider router={router} />
+	<App>
+		<ContextWrapper>
+			<RouterProvider router={router} />
+		</ContextWrapper>
+	</App>
 )
