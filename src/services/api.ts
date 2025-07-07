@@ -8,7 +8,7 @@ const loginAPI = (username: string, password: string) => {
     }
     return axios.post<IBackendRes<ILogin>>(urlBackend, data, {
         headers: {
-            delay: 3000
+            delay: 1000
         }
     });
 }
@@ -22,7 +22,7 @@ const fetchAccountAPI = () => {
     const urlBackend = "/api/v1/auth/account";
     return axios.get<IBackendRes<IFetchAccount>>(urlBackend, {
         headers: {
-            delay: 2000
+            delay: 1000
         }
     })
 }

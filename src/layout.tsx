@@ -7,12 +7,14 @@ import { Spin } from "antd";
 
 
 const Layout = () => {
-	const { setUser, isAppLoading, setIsAppLoading } = useCurrentApp();
+	const { setUser, isAppLoading, setIsAppLoading, setIsAuthenticated } = useCurrentApp();
+
 	useEffect(() => {
 		const fetchAccount = async () => {
 			const result = await fetchAccountAPI();
 			if (result.data) {
 				setUser(result.data.user);
+				setIsAuthenticated(true);
 			}
 			setIsAppLoading(false);
 		}
