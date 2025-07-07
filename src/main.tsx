@@ -13,6 +13,7 @@ import LoginPage from './pages/client/auth/login.tsx';
 import { App } from 'antd';
 import HomePage from './pages/client/home.tsx';
 import { ContextWrapper } from './components/context/app.context.tsx';
+import ProtectedRoute from './components/auth/index.tsx';
 
 const router = createBrowserRouter([
 	{
@@ -33,11 +34,11 @@ const router = createBrowserRouter([
 			},
 			{
 				path: '/checkout',
-				element: <div>Checkout page</div>,
+				element: <ProtectedRoute><div>Checkout page</div></ProtectedRoute>,
 			},
 			{
 				path: '/admin',
-				element: <div>Admin page</div>,
+				element: <ProtectedRoute><div>Admin page</div></ProtectedRoute>,
 			}
 		]
 	},
