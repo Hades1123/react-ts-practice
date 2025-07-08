@@ -1,9 +1,17 @@
 import { getUserAPI } from '@/services/api';
+import { dateRangeValidate } from '@/services/helper';
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space } from 'antd';
 import { useRef, useState } from 'react';
+
+type TSearch = {
+    fullName: string;
+    email: string;
+    createdAt: string;
+    createdAtRange: string;
+}
 
 
 const TableUser = () => {
@@ -18,6 +26,10 @@ const TableUser = () => {
         setPageSize(pageSize)
     }
 
+    const onResetSearchForm = () => {
+        setPage(1);
+    }
+
     const columns: ProColumns<IUserTable>[] = [
         {
             title: "STT",
@@ -26,7 +38,8 @@ const TableUser = () => {
             width: 48,
             render: (_, record, index) => {
                 return <span>{index + 1 + (page - 1) * pageSize}</span>
-            }
+            },
+
         },
         {
             title: 'id',
@@ -44,9 +57,17 @@ const TableUser = () => {
             copyable: true,
         },
         {
-            title: 'Created at',
+            title: 'Created At',
             dataIndex: 'createdAt',
             valueType: 'date',
+            sorter: true,
+            hideInSearch: true
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAtRange',
+            valueType: 'dateRange',
+            hideInTable: true,
         },
         {
 
@@ -65,13 +86,29 @@ const TableUser = () => {
     const actionRef = useRef<ActionType>();
     return (
         <>
-            <ProTable<IUserTable>
+            <ProTable<IUserTable, TSearch>
+                onReset={onResetSearchForm}
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
-                    // console.log('render')
-                    const resultAPI = await getUserAPI(page, pageSize);
+                    let query = "";
+                    if (params) {
+                        query += `current=${params.current}&pageSize=${params.pageSize}`
+                        if (params.email) {
+                            query += `&email=/${params.email}/i`
+                        }
+                        if (params.fullName) {
+                            query += `&fullName=/${params.fullName}/i`
+                        }
+
+                        const createDateRange = dateRangeValidate(params.createdAtRange);
+                        if (createDateRange) {
+                            query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`
+                        }
+
+                    }
+                    const resultAPI = await getUserAPI(query);
                     return {
                         data: resultAPI.data?.result,
                         "page": page,

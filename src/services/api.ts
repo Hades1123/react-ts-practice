@@ -32,9 +32,10 @@ const logoutAPI = () => {
     return axios.post<IBackendRes<IRegister>>(urlBackend);
 }
 
-const getUserAPI = (current: number, pageSize: number) => {
-    const urlBackend = `/api/v1/user?current=${current}&pageSize=${pageSize}`;
+const getUserAPI = (query: string) => {
+    const urlBackend = `/api/v1/user?${query}`;
     return axios.get<IBackendRes<IModelPaginate<IUserTable>>>(urlBackend);
 }
+
 
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI }
