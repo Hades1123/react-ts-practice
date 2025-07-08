@@ -21,9 +21,6 @@ import LayoutAdmin from 'components/layout/layout.admin';
 import { StrictMode } from 'react';
 import enUS from 'antd/locale/en_US';
 
-// sile2005
-// 84keRmJKI1ug4nGF
-// mongodb+srv://sile2005:84keRmJKI1ug4nGF@cluster0.9xubmxz.mongodb.net/
 
 const router = createBrowserRouter([
 	{
