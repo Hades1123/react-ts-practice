@@ -9,7 +9,7 @@ import BookPage from './pages/client/book.tsx';
 import AboutPage from './pages/client/about.tsx';
 import RegisterPage from './pages/client/auth/register.tsx';
 import LoginPage from './pages/client/auth/login.tsx';
-import { App } from 'antd';
+import { App, ConfigProvider } from 'antd';
 import HomePage from './pages/client/home.tsx';
 import { ContextWrapper } from './components/context/app.context.tsx';
 import ProtectedRoute from './components/auth/index.tsx';
@@ -19,6 +19,7 @@ import ManageOrderPage from 'pages/admin/manage.order';
 import ManageUserPage from 'pages/admin/manage.user';
 import LayoutAdmin from 'components/layout/layout.admin';
 import { StrictMode } from 'react';
+import enUS from 'antd/locale/en_US';
 
 
 const router = createBrowserRouter([
@@ -110,7 +111,9 @@ createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<App>
 			<ContextWrapper>
-				<RouterProvider router={router} />
+				<ConfigProvider locale={enUS}>
+					<RouterProvider router={router} />
+				</ConfigProvider>
 			</ContextWrapper>
 		</App>
 	</StrictMode>
