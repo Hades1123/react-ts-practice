@@ -3,19 +3,9 @@ import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable, TableDropdown } from '@ant-design/pro-components';
 import { Button, Space, Tag } from 'antd';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 
-const customizeTime = (value: string) => {
-
-}
-
-const onChangePagination = async (page: number, pagesize: number) => {
-    const result = await getUserAPI(page, pagesize);
-    if (result.data) {
-
-    }
-}
 const columns: ProColumns<IUserTable>[] = [
     {
         dataIndex: 'index',
@@ -57,6 +47,17 @@ const columns: ProColumns<IUserTable>[] = [
 ];
 
 const TableUser = () => {
+    const [page, setPage] = useState<number>(1);
+    const [pageSize, setPageSize] = useState<number>(5);
+    const [DataTable, setDataTable] = useState<IUserTable[] | null>(null);
+
+    const onChangePage = (page: number) => {
+        setPage(page)
+    }
+
+    const onPageSizeChange = (page: number, pageSize: number) => {
+        setPageSize(pageSize)
+    }
     const actionRef = useRef<ActionType>();
     return (
         <>
@@ -66,7 +67,8 @@ const TableUser = () => {
                 cardBordered
                 request={async (params, sort, filter) => {
                     // console.log(sort, filter);
-                    const resultAPI = await getUserAPI(1, 5);
+                    console.log('render')
+                    const resultAPI = await getUserAPI(page, pageSize);
                     return {
                         data: resultAPI.data?.result,
                         "page": 1,
@@ -80,9 +82,11 @@ const TableUser = () => {
                 }}
                 rowKey="_id"
                 pagination={{
-                    pageSize: 5,
-                    onChange: (page, pagesize) => console.log({ page, pagesize }),
+                    pageSize: pageSize,
+                    current: page,
+                    onChange: onChangePage,
                     showSizeChanger: true,
+                    onShowSizeChange: onPageSizeChange,
                 }}
                 dateFormatter="string"
                 headerTitle="Table user"
