@@ -1,5 +1,6 @@
-Các bước cài đặt: (chế độ development)
+Setting: development mode
 1. clone code
-2. cài đặt thư viện: npm i
-3. Update file .env.development (nếu cần thiết)
-4. Chạy dự án: npm run dev
+2. npm i
+4. npm run dev
+
+Note: You can not see anything after running code if you do not have my backend project 👌💀
