@@ -23,7 +23,6 @@ const TableUser = () => {
     const [isOpenDetailUser, setIsOpenDetailUser] = useState<boolean>(false);
     const [detailUser, setDetailUser] = useState<IUserTable | null>(null);
     const [isOpenCreateUser, setIsOpenCreateUser] = useState<boolean>(false);
-    const [createSuccess, setCreateSuccess] = useState<boolean>(false);
 
     const onChangePage = (page: number) => {
         setPage(page)
@@ -100,6 +99,11 @@ const TableUser = () => {
     ];
 
     const actionRef = useRef<ActionType>();
+
+    const refreshTable = () => {
+        actionRef.current?.reload();
+    }
+
     return (
         <>
             <ProTable<IUserTable, TSearch>
@@ -124,17 +128,12 @@ const TableUser = () => {
                         }
                     }
 
+                    query += '&sort=-createdAt';
+
                     if (Object.keys(sort).length !== 0) {
                         const assign = Object.values(sort)[0] === 'ascend' ? '' : '-';
                         const key = Object.keys(sort)[0];
                         query += `&sort=${assign}${key}`;
-                    }
-
-                    if (createSuccess) {
-                        setCreateSuccess(false);
-                        query = query.replace(`current=${params.current}`, 'current=1');
-                        query += '&sort=-createdAt';
-                        setPage(1);
                     }
 
                     const resultAPI = await getUserAPI(query);
@@ -178,10 +177,7 @@ const TableUser = () => {
             <CreateUserModal
                 isOpenCreateUser={isOpenCreateUser}
                 setIsOpenCreateUser={setIsOpenCreateUser}
-                page={page}
-                pageSize={pageSize}
-                actionRef={actionRef}
-                setCreateSuccess={setCreateSuccess}
+                refreshTable={refreshTable}
             />
         </>
     );

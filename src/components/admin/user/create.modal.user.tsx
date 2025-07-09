@@ -1,15 +1,11 @@
 import { createUserAPI } from "@/services/api";
-import { ActionType } from "@ant-design/pro-components";
 import { Form, Input, Modal, Button, App } from "antd";
 
 
 interface IProps {
     isOpenCreateUser: boolean;
     setIsOpenCreateUser: (value: boolean) => void;
-    page: number;
-    pageSize: number;
-    actionRef: React.MutableRefObject<ActionType | undefined>;
-    setCreateSuccess: (v: boolean) => void;
+    refreshTable: () => void;
 }
 
 interface IUserCreate {
@@ -20,7 +16,7 @@ interface IUserCreate {
 }
 
 const CreateUserModal = (props: IProps) => {
-    const { isOpenCreateUser, setIsOpenCreateUser, actionRef, setCreateSuccess } = props;
+    const { isOpenCreateUser, setIsOpenCreateUser, refreshTable } = props;
     const [createUserForm] = Form.useForm();
     const { notification, message } = App.useApp();
 
@@ -34,8 +30,7 @@ const CreateUserModal = (props: IProps) => {
         if (result.data) {
             resetAndClose();
             message.success('Create user successfully');
-            setCreateSuccess(true);
-            actionRef.current?.reload();
+            refreshTable();
         }
         else {
             notification.error({
