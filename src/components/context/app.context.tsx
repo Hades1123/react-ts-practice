@@ -2,6 +2,7 @@ import { fetchAccountAPI } from "@/services/api";
 import { Spin } from "antd";
 import { createContext, useContext, useEffect, useState } from "react"
 
+
 interface IContextType {
     isAuthenticated: boolean;
     setIsAuthenticated: (v: boolean) => void;

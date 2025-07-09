@@ -5,6 +5,9 @@ import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space } from 'antd';
 import { useRef, useState } from 'react';
+import DetailUser from './detail.user';
+import CreateUserModal from './create.modal.user';
+
 
 type TSearch = {
     fullName: string;
@@ -17,6 +20,10 @@ type TSearch = {
 const TableUser = () => {
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
+    const [isOpenDetailUser, setIsOpenDetailUser] = useState<boolean>(false);
+    const [detailUser, setDetailUser] = useState<IUserTable | null>(null);
+    const [isOpenCreateUser, setIsOpenCreateUser] = useState<boolean>(false);
+    const [createSuccess, setCreateSuccess] = useState<boolean>(false);
 
     const onChangePage = (page: number) => {
         setPage(page)
@@ -28,6 +35,15 @@ const TableUser = () => {
 
     const onResetSearchForm = () => {
         setPage(1);
+    }
+
+    const handleOpenDetailUser = (record: IUserTable) => {
+        setIsOpenDetailUser(true);
+        setDetailUser(record);
+    }
+
+    const onClickAddNew = () => {
+        setIsOpenCreateUser(true);
     }
 
     const columns: ProColumns<IUserTable>[] = [
@@ -44,7 +60,7 @@ const TableUser = () => {
         {
             title: 'id',
             dataIndex: '_id',
-            render: (_, record) => <a>{record._id}</a>,
+            render: (_, record) => <a onClick={() => handleOpenDetailUser(record)}>{record._id}</a>,
             search: false,
         },
         {
@@ -73,7 +89,7 @@ const TableUser = () => {
 
             title: 'Action',
             key: 'action',
-            render: (_, record) => (
+            render: () => (
                 <Space size="middle">
                     <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} />
                     <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} />
@@ -92,6 +108,7 @@ const TableUser = () => {
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort, filter) => {
+                    // console.log({ params, sort, filter })
                     let query = "";
                     if (params) {
                         query += `current=${params.current}&pageSize=${params.pageSize}`
@@ -101,13 +118,25 @@ const TableUser = () => {
                         if (params.fullName) {
                             query += `&fullName=/${params.fullName}/i`
                         }
-
                         const createDateRange = dateRangeValidate(params.createdAtRange);
                         if (createDateRange) {
                             query += `&createdAt>=${createDateRange[0]}&createdAt<=${createDateRange[1]}`
                         }
-
                     }
+
+                    if (Object.keys(sort).length !== 0) {
+                        const assign = Object.values(sort)[0] === 'ascend' ? '' : '-';
+                        const key = Object.keys(sort)[0];
+                        query += `&sort=${assign}${key}`;
+                    }
+
+                    if (createSuccess) {
+                        setCreateSuccess(false);
+                        query = query.replace(`current=${params.current}`, 'current=1');
+                        query += '&sort=-createdAt';
+                        setPage(1);
+                    }
+
                     const resultAPI = await getUserAPI(query);
                     return {
                         data: resultAPI.data?.result,
@@ -134,14 +163,25 @@ const TableUser = () => {
                     <Button
                         key="button"
                         icon={<PlusOutlined />}
-                        onClick={() => {
-                            actionRef.current?.reload();
-                        }}
+                        onClick={onClickAddNew}
                         type="primary"
                     >
                         Add new
                     </Button>
                 ]}
+            />
+            <DetailUser
+                isOpenDetailUser={isOpenDetailUser}
+                setIsOpenDetailUser={setIsOpenDetailUser}
+                detailUser={detailUser}
+            />
+            <CreateUserModal
+                isOpenCreateUser={isOpenCreateUser}
+                setIsOpenCreateUser={setIsOpenCreateUser}
+                page={page}
+                pageSize={pageSize}
+                actionRef={actionRef}
+                setCreateSuccess={setCreateSuccess}
             />
         </>
     );

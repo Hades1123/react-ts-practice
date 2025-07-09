@@ -60,4 +60,11 @@ declare global {
         createdAt: Date;
         updatedAt: Date;
     }
+
+    interface IUserCreate {
+        fullName: string;
+        email: string;
+        password: string;
+        phone: string;
+    }
 }
