@@ -9,6 +9,7 @@ import DetailUser from './detail.user';
 import CreateUserModal from './create.modal.user';
 import ImportUser from './data/import.user';
 import { CSVLink } from 'react-csv';
+import { EditUser } from './edit.user';
 
 
 type TSearch = {
@@ -31,6 +32,7 @@ const TableUser = () => {
     const [query, setQuery] = useState<string>('');
     const [currentUserTable, setCurrentUserTable] = useState<IUserTable[]>([]);
     const [openExportModal, setOpenExportModal] = useState<boolean>(false)
+    const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
 
     const onChangePage = (page: number) => {
         setPage(page)
@@ -62,6 +64,11 @@ const TableUser = () => {
         if (result.data) {
             setCurrentUserTable(result.data.result);
         }
+    }
+
+    const handleEditButton = (record: IUserTable) => {
+        setIsOpenEditModal(true);
+        setDetailUser(record);
     }
 
     const columns: ProColumns<IUserTable>[] = [
@@ -107,9 +114,9 @@ const TableUser = () => {
 
             title: 'Action',
             key: 'action',
-            render: () => (
+            render: (_, record) => (
                 <Space size="middle">
-                    <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} />
+                    <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} onClick={() => handleEditButton(record)} />
                     <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} />
                 </Space>
             ),
@@ -239,6 +246,14 @@ const TableUser = () => {
             >
                 Do you want to export this user.csv file ?
             </Modal>,
+
+            <EditUser
+                isOpenEditModal={isOpenEditModal}
+                setIsOpenEditModal={setIsOpenEditModal}
+                detailUser={detailUser}
+                setDetailUser={setDetailUser}
+                refreshTable={refreshTable}
+            />
         </>
     );
 };
