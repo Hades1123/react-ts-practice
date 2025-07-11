@@ -131,12 +131,13 @@ const TableUser = () => {
                         }
                     }
 
-                    query += '&sort=-createdAt';
-
                     if (Object.keys(sort).length !== 0) {
                         const assign = Object.values(sort)[0] === 'ascend' ? '' : '-';
                         const key = Object.keys(sort)[0];
                         query += `&sort=${assign}${key}`;
+                    }
+                    else {
+                        query += '&sort=-createdAt';
                     }
 
                     const resultAPI = await getUserAPI(query);

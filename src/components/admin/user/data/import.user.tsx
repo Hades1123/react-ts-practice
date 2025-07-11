@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Buffer } from 'buffer';
 import excel from 'exceljs'
 import { createListUsers } from '@/services/api';
+import template from 'assets/template.xlsx?url'
 
 interface IProps {
 	isOpenImportModal: boolean;
@@ -110,6 +111,7 @@ const ImportUser = (props: IProps) => {
 		else {
 			message.success(`Create ${result.data?.countSuccess} users successfully, error: ${result.data?.countError}`);
 			setIsOpenImportModal(false);
+			setImportData([]);
 			refreshTable();
 		}
 		setLoading(false);
@@ -137,7 +139,7 @@ const ImportUser = (props: IProps) => {
 				</p>
 				<p className="ant-upload-text">Click or drag file to this area to upload</p>
 				<p className="ant-upload-hint">
-					Support for a single support. Only accept .csv, .xls, .xlsx
+					Support for a single support. Only accept .csv, .xls, .xlsx. <a href={template} download onClick={(event) => event.stopPropagation()}>Dowload template here</a>
 				</p>
 			</Dragger>
 			<Table columns={columns} className='pt-5' dataSource={importData!} rowKey={"email"} />
