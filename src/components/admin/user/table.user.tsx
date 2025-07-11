@@ -1,12 +1,13 @@
 import { getUserAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
-import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space } from 'antd';
 import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
 import CreateUserModal from './create.modal.user';
+import ImportUser from './data/import.user';
 
 
 type TSearch = {
@@ -18,11 +19,13 @@ type TSearch = {
 
 
 const TableUser = () => {
+
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
     const [isOpenDetailUser, setIsOpenDetailUser] = useState<boolean>(false);
     const [detailUser, setDetailUser] = useState<IUserTable | null>(null);
     const [isOpenCreateUser, setIsOpenCreateUser] = useState<boolean>(false);
+    const [isOpenImportModal, setIsOpenImportModal] = useState<boolean>(false);
 
     const onChangePage = (page: number) => {
         setPage(page)
@@ -161,12 +164,20 @@ const TableUser = () => {
                 toolBarRender={() => [
                     <Button
                         key="button"
+                        icon={<CloudUploadOutlined />}
+                        onClick={() => setIsOpenImportModal(true)}
+                        type="primary"
+                    >
+                        Import
+                    </Button>,
+                    <Button
+                        key="button"
                         icon={<PlusOutlined />}
                         onClick={onClickAddNew}
                         type="primary"
                     >
                         Add new
-                    </Button>
+                    </Button>,
                 ]}
             />
             <DetailUser
@@ -178,6 +189,10 @@ const TableUser = () => {
                 isOpenCreateUser={isOpenCreateUser}
                 setIsOpenCreateUser={setIsOpenCreateUser}
                 refreshTable={refreshTable}
+            />
+            <ImportUser
+                isOpenImportModal={isOpenImportModal}
+                setIsOpenImportModal={setIsOpenImportModal}
             />
         </>
     );
