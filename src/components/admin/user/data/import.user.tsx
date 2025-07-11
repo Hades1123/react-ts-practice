@@ -39,13 +39,6 @@ const ImportUser = (props: IProps) => {
 		},
 	];
 	const { message } = App.useApp();
-	const dataSource: IDataImport[] = [
-		{
-			fullName: 'vansi',
-			email: 'dp1.1a7.si@gamil.com',
-			phone: '213213213',
-		}
-	]
 
 	const propsUpload: UploadProps = {
 		maxCount: 1,
@@ -57,43 +50,42 @@ const ImportUser = (props: IProps) => {
 				if (onSuccess) onSuccess("ok");
 			}, 1000);
 		},
-		onChange(info) {
+		async onChange(info) {
 			const { status } = info.file;
+			console.log(info)
 			if (status !== 'uploading') {
 				console.log(info.file, info.fileList);
 			}
 			if (status === 'done') {
 				message.success(`${info.file.name} file uploaded successfully.`);
+				if (info.fileList && info.fileList.length > 0) {
+					const file = info.fileList[0].originFileObj;
+					// Convert js file to excel file
+					const arrayBuffer = await file?.arrayBuffer();
+					const buffer = Buffer.from(arrayBuffer!);
+					// Conver excel file to Json object
+					const workbook = new excel.Workbook();
+					// use readFile for testing purpose
+					await workbook.xlsx.load(buffer);
+					let jsonData: any = [];
+					workbook.worksheets.forEach(function (sheet) {
+						// read first row as data keys
+						let firstRow = sheet.getRow(1);
+						if (!firstRow.cellCount) return;
+						let keys: any = firstRow.values;
+						sheet.eachRow((row, rowNumber) => {
+							if (rowNumber == 1) return;
+							let values: any = row.values
+							let obj: any = {};
+							for (let i = 1; i < keys.length; i++) {
+								obj[keys[i]] = values[i];
+							}
+							jsonData.push(obj);
+						})
 
-				let buffer: any;
-				(async function () {
-					const arrayBuffer = await info.file.originFileObj?.arrayBuffer();
-					buffer = Buffer.from(arrayBuffer!);
-					(async function () {
-						const workbook = new excel.Workbook();
-						// use readFile for testing purpose
-						await workbook.xlsx.load(buffer);
-						let jsonData: any = [];
-						workbook.worksheets.forEach(function (sheet) {
-							// read first row as data keys
-							let firstRow = sheet.getRow(1);
-							if (!firstRow.cellCount) return;
-							let keys: any = firstRow.values;
-							sheet.eachRow((row, rowNumber) => {
-								if (rowNumber == 1) return;
-								let values: any = row.values
-								let obj: any = {};
-								for (let i = 1; i < keys.length; i++) {
-									obj[keys[i]] = values[i];
-								}
-								jsonData.push(obj);
-							})
-
-						});
-						setImportData(jsonData);
-					})();
-				})();
-
+					});
+					setImportData(jsonData);
+				}
 			} else if (status === 'error') {
 				message.error(`${info.file.name} file upload failed.`);
 			}
