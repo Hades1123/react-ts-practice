@@ -4,22 +4,18 @@ import { App, Modal, Upload, Table } from 'antd';
 import { useState } from 'react';
 import { Buffer } from 'buffer';
 import excel from 'exceljs'
+import { createListUsers } from '@/services/api';
 
 interface IProps {
 	isOpenImportModal: boolean;
 	setIsOpenImportModal: (v: boolean) => void;
-}
-
-interface IDataImport {
-	fullName: string;
-	email: string;
-	phone: string;
+	refreshTable: () => void;
 }
 
 const { Dragger } = Upload;
 
 const ImportUser = (props: IProps) => {
-	const { isOpenImportModal, setIsOpenImportModal } = props
+	const { isOpenImportModal, setIsOpenImportModal, refreshTable } = props
 	const [importData, setImportData] = useState<IDataImport[]>([]);
 	const columns: TableProps<IDataImport>['columns'] = [
 		{
@@ -38,7 +34,7 @@ const ImportUser = (props: IProps) => {
 			key: 'phone',
 		},
 	];
-	const { message } = App.useApp();
+	const { message, notification } = App.useApp();
 
 	const propsUpload: UploadProps = {
 		maxCount: 1,
@@ -94,24 +90,42 @@ const ImportUser = (props: IProps) => {
 			console.log('Dropped files', e.dataTransfer.files);
 		},
 	};
+
 	const onCancelModal = () => {
 		setImportData([]);
 		setIsOpenImportModal(false);
 	}
+
+	const onImportData = async () => {
+		importData.forEach(item => item.password = '123456');
+		const result = await createListUsers(importData);
+		if (result.data?.countSuccess === 0) {
+			notification.error({
+				message: 'Create user failed',
+				description: `Success : ${result.data.countSuccess}, Error: ${result.data.countError}`,
+			})
+		}
+		else {
+			message.success(`Create ${result.data?.countSuccess} users successfully, error: ${result.data?.countError}`);
+			setIsOpenImportModal(false);
+			refreshTable();
+		}
+	}
+
 	return (
 		<Modal
 			title="Import data user"
 			closable={{ 'aria-label': 'Custom Close Button' }}
 			open={isOpenImportModal}
-			onOk={() => setIsOpenImportModal(false)}
+			onOk={onImportData}
 			onCancel={onCancelModal}
 			width={800}
 			maskClosable={false}
 			okText={'Import data'}
-			okButtonProps={{
-				disabled: importData.length > 0,
-			}}
 			destroyOnClose={true}
+			okButtonProps={{
+				disabled: importData.length === 0 ? true : false
+			}}
 		>
 			<Dragger {...propsUpload}>
 				<p className="ant-upload-drag-icon">

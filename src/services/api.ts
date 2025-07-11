@@ -42,4 +42,9 @@ const createUserAPI = (value: IUserCreate) => {
     return axios.post<IBackendRes<IUserTable>>(urlBackend, value);
 }
 
-export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI }
+const createListUsers = (value: IDataImport[]) => {
+    const urlBackend = '/api/v1/user/bulk-create';
+    return axios.post<IBackendRes<ICreateUserList>>(urlBackend, value);
+}
+
+export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }

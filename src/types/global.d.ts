@@ -67,4 +67,27 @@ declare global {
         password: string;
         phone: string;
     }
+
+    interface IErrorCreateUserList {
+        error: {
+            index: number
+            code: number
+            errmsg: string
+            op: IUserTable
+        }
+        index: number
+    }
+
+    interface ICreateUserList {
+        countSuccess: number
+        countError: number
+        detail: string | IErrorCreateUserList[]
+    }
+
+    interface IDataImport {
+        fullName: string;
+        email: string;
+        password?: string;
+        phone: string;
+    }
 }
