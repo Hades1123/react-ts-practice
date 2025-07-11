@@ -1,13 +1,14 @@
 import { getUserAPI } from '@/services/api';
 import { dateRangeValidate } from '@/services/helper';
-import { CloudUploadOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloudUploadOutlined, DeleteOutlined, EditOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Space } from 'antd';
+import { Button, Modal, Space } from 'antd';
 import { useRef, useState } from 'react';
 import DetailUser from './detail.user';
 import CreateUserModal from './create.modal.user';
 import ImportUser from './data/import.user';
+import { CSVLink } from 'react-csv';
 
 
 type TSearch = {
@@ -22,10 +23,14 @@ const TableUser = () => {
 
     const [page, setPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(5);
+    const [totalPage, setTotalPage] = useState<number>(0);
     const [isOpenDetailUser, setIsOpenDetailUser] = useState<boolean>(false);
     const [detailUser, setDetailUser] = useState<IUserTable | null>(null);
     const [isOpenCreateUser, setIsOpenCreateUser] = useState<boolean>(false);
     const [isOpenImportModal, setIsOpenImportModal] = useState<boolean>(false);
+    const [query, setQuery] = useState<string>('');
+    const [currentUserTable, setCurrentUserTable] = useState<IUserTable[]>([]);
+    const [openExportModal, setOpenExportModal] = useState<boolean>(false)
 
     const onChangePage = (page: number) => {
         setPage(page)
@@ -46,6 +51,17 @@ const TableUser = () => {
 
     const onClickAddNew = () => {
         setIsOpenCreateUser(true);
+    }
+
+    const handleButtonExport = async () => {
+        setOpenExportModal(true);
+        const result =
+            await getUserAPI(query
+                .replace(`pageSize=${pageSize}`, `pageSize=${totalPage}`)
+                .replace(`current=${page}`, `current=${1}`));
+        if (result.data) {
+            setCurrentUserTable(result.data.result);
+        }
     }
 
     const columns: ProColumns<IUserTable>[] = [
@@ -141,6 +157,10 @@ const TableUser = () => {
                     }
 
                     const resultAPI = await getUserAPI(query);
+                    if (resultAPI.data) {
+                        setQuery(query);
+                        setTotalPage(resultAPI.data.meta.total);
+                    }
                     return {
                         data: resultAPI.data?.result,
                         "page": page,
@@ -163,6 +183,14 @@ const TableUser = () => {
                 dateFormatter="string"
                 headerTitle="Table user"
                 toolBarRender={() => [
+                    <Button
+                        key="button"
+                        icon={<ExportOutlined />}
+                        type="primary"
+                        onClick={handleButtonExport}
+                    >
+                        Export
+                    </Button>,
                     <Button
                         key="button"
                         icon={<CloudUploadOutlined />}
@@ -196,6 +224,21 @@ const TableUser = () => {
                 setIsOpenImportModal={setIsOpenImportModal}
                 refreshTable={refreshTable}
             />
+            {/* export modal  */}
+            <Modal
+                title="Export modal"
+                closable={{ 'aria-label': 'Custom Close Button' }}
+                open={openExportModal}
+                onCancel={() => setOpenExportModal(false)}
+                footer={[
+                    <Button type='primary' onClick={() => setOpenExportModal(false)}>Cancel</Button>,
+                    <Button type='primary'>
+                        <CSVLink data={currentUserTable} filename='user.csv' onClick={() => setOpenExportModal(false)}>Export</CSVLink>
+                    </Button>,
+                ]}
+            >
+                Do you want to export this user.csv file ?
+            </Modal>,
         </>
     );
 };
