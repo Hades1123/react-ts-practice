@@ -78,7 +78,7 @@ declare global {
         index: number
     }
 
-    interface ICreateUserList {
+    interface IImportResponse {
         countSuccess: number
         countError: number
         detail: string | IErrorCreateUserList[]

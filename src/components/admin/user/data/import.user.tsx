@@ -34,6 +34,7 @@ const ImportUser = (props: IProps) => {
 			key: 'phone',
 		},
 	];
+	const [loading, setLoading] = useState<boolean>(false);
 	const { message, notification } = App.useApp();
 
 	const propsUpload: UploadProps = {
@@ -97,7 +98,8 @@ const ImportUser = (props: IProps) => {
 	}
 
 	const onImportData = async () => {
-		importData.forEach(item => item.password = '123456');
+		importData.forEach(item => item.password = import.meta.env.VITE_USER_CREATE_DEFAULT_PASSWORD);
+		setLoading(true)
 		const result = await createListUsers(importData);
 		if (result.data?.countSuccess === 0) {
 			notification.error({
@@ -110,6 +112,7 @@ const ImportUser = (props: IProps) => {
 			setIsOpenImportModal(false);
 			refreshTable();
 		}
+		setLoading(false);
 	}
 
 	return (
@@ -124,7 +127,8 @@ const ImportUser = (props: IProps) => {
 			okText={'Import data'}
 			destroyOnClose={true}
 			okButtonProps={{
-				disabled: importData.length === 0 ? true : false
+				disabled: importData.length === 0 ? true : false,
+				loading: loading
 			}}
 		>
 			<Dragger {...propsUpload}>
