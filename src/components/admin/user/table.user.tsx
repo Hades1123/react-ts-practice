@@ -10,6 +10,7 @@ import CreateUserModal from './create.modal.user';
 import ImportUser from './data/import.user';
 import { CSVLink } from 'react-csv';
 import { EditUser } from './edit.user';
+import { DeleteUser } from './delete.user.popUp';
 
 
 type TSearch = {
@@ -114,10 +115,23 @@ const TableUser = () => {
 
             title: 'Action',
             key: 'action',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <Space size="middle">
                     <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} onClick={() => handleEditButton(record)} />
-                    <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} />
+                    <DeleteUser
+                        detailUser={detailUser}
+                        refreshTable={refreshTable}
+                        setPage={setPage}
+                        totalPage={totalPage}
+                        pageSize={pageSize}
+                        page={page}
+                    >
+                        <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }}
+                            onClick={() => {
+                                setDetailUser(record);
+                            }}
+                        />
+                    </DeleteUser>
                 </Space>
             ),
             search: false,
@@ -254,6 +268,7 @@ const TableUser = () => {
                 setDetailUser={setDetailUser}
                 refreshTable={refreshTable}
             />
+
         </>
     );
 };

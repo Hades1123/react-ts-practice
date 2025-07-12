@@ -52,4 +52,9 @@ export const updateUserAPI = (_id: string, fullName: string, phone: string) => {
     return axios.put<IBackendRes<IRegister>>(urlBackend, { _id, fullName, phone });
 }
 
+export const deleteUserAPI = (_id: string) => {
+    const urlBackend = `/api/v1/user/${_id}`;
+    return axios.delete<IBackendRes<any>>(urlBackend);
+}
+
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }
