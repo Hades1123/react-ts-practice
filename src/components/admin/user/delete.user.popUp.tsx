@@ -1,6 +1,7 @@
 import { deleteUserAPI } from "@/services/api";
 import { App, notification, Popconfirm } from "antd"
 import { PopconfirmProps } from "antd/lib";
+import { useState } from "react";
 
 interface IProps {
     detailUser: IUserTable | null;
@@ -14,9 +15,12 @@ interface IProps {
 
 export const DeleteUser = (props: IProps) => {
     const { detailUser, refreshTable, setPage, totalPage, pageSize, page } = props;
+    const [loading, setLoading] = useState(false);
+
     const { message } = App.useApp();
 
     const confirm: PopconfirmProps['onConfirm'] = async () => {
+        setLoading(true);
         const result = await deleteUserAPI(detailUser?._id!);
         if (result.data) {
             message.success('Delete user successfully');
@@ -29,6 +33,7 @@ export const DeleteUser = (props: IProps) => {
                 description: JSON.stringify(result.message),
             })
         }
+        setLoading(false)
     };
 
     const cancel: PopconfirmProps['onCancel'] = () => {
@@ -44,6 +49,9 @@ export const DeleteUser = (props: IProps) => {
                 okText="Delete"
                 cancelText="No"
                 placement="leftTop"
+                okButtonProps={{
+                    loading: loading
+                }}
             >
                 {props.children}
             </Popconfirm>
