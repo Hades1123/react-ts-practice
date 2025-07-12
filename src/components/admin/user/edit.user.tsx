@@ -1,7 +1,7 @@
 import { updateUserAPI } from "@/services/api";
 import { Form, Input, Modal, App } from "antd"
 import { FormProps } from "antd/lib";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface IProps {
     isOpenEditModal: boolean;
@@ -15,7 +15,10 @@ export const EditUser = (props: IProps) => {
     const { message } = App.useApp();
     const { isOpenEditModal, setIsOpenEditModal, detailUser, setDetailUser, refreshTable } = props;
     const [editForm] = Form.useForm();
+    const [loading, setLoading] = useState(false);
+
     const onFinish: FormProps<IUserTable>['onFinish'] = async (values) => {
+        setLoading(true);
         const result = await updateUserAPI(detailUser?._id!, values.fullName, values.phone);
         if (result.data) {
             message.success('Update user successfully');
@@ -23,6 +26,7 @@ export const EditUser = (props: IProps) => {
             setDetailUser(null);
             refreshTable();
         }
+        setLoading(false);
     };
 
     useEffect(() => {
@@ -53,6 +57,9 @@ export const EditUser = (props: IProps) => {
                 onOk={onOk}
                 onCancel={onCancel}
                 maskClosable={false}
+                okButtonProps={{
+                    loading: loading
+                }}
             >
                 <Form
                     form={editForm}
