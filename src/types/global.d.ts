@@ -98,8 +98,10 @@ declare global {
         author: string;
         price: number;
         category: string;
+        slider: string[];
         updatedAt: Date;
         createdAt: Date;
+        thumbnail: string;
     }
 
     interface IBookPaginate<T> {

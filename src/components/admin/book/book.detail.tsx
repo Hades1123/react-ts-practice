@@ -9,12 +9,14 @@ interface IProps {
     openDetailDescription: boolean;
     setOpenDetailDescription: (v: boolean) => void;
     currentBook: IBookTable | null;
+    fileList: UploadFile[];
+    setFileList: (v: UploadFile[]) => void;
 }
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 export const DetailBook = (props: IProps) => {
-    const { openDetailDescription, setOpenDetailDescription, currentBook } = props;
+    const { openDetailDescription, setOpenDetailDescription, currentBook, fileList, setFileList } = props;
     const onClose = () => {
         setOpenDetailDescription(false);
     }
@@ -67,32 +69,6 @@ export const DetailBook = (props: IProps) => {
     ];
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [fileList, setFileList] = useState<UploadFile[]>([
-        {
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-2',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-3',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-4',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-    ]);
 
     const handlePreview = async (file: UploadFile) => {
         if (!file.url && !file.preview) {

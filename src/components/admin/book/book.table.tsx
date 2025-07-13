@@ -6,6 +6,8 @@ import { Button, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useRef, useState } from 'react';
 import { DetailBook } from './book.detail';
+import { UploadFile } from 'antd/lib';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ISearch {
     mainText: string;
@@ -15,8 +17,20 @@ interface ISearch {
 export const BookTable = () => {
     const [currentBook, setCurrentBook] = useState<IBookTable | null>(null);
     const [openDetailDescription, setOpenDetailDescription] = useState<boolean>(false);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
     const onClickViewDetail = (record: IBookTable) => {
+        const mergeImagesList = [record.thumbnail, ...record.slider];
+        let newFileList: UploadFile[] = [];
+        for (const item of mergeImagesList) {
+            newFileList.push({
+                uid: uuidv4(),
+                name: 'image.png',
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`
+            })
+        }
+        setFileList(newFileList)
         setCurrentBook(record);
         setOpenDetailDescription(true);
     }
@@ -154,6 +168,8 @@ export const BookTable = () => {
                 openDetailDescription={openDetailDescription}
                 setOpenDetailDescription={setOpenDetailDescription}
                 currentBook={currentBook}
+                fileList={fileList}
+                setFileList={setFileList}
             />
         </>
     );
