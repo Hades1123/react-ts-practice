@@ -90,4 +90,24 @@ declare global {
         password?: string;
         phone: string;
     }
+
+    // For book page
+    interface IBookTable {
+        _id: string;
+        mainText: string;
+        author: string;
+        price: number;
+        category: string;
+        updatedAt: Date;
+    }
+
+    interface IBookPaginate<T> {
+        meta: {
+            current: number;
+            pageSize: number;
+            pages: number;
+            total: number;
+        }
+        result: T[]
+    }
 }
