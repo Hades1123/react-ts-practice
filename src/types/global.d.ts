@@ -99,6 +99,7 @@ declare global {
         price: number;
         category: string;
         updatedAt: Date;
+        createdAt: Date;
     }
 
     interface IBookPaginate<T> {
