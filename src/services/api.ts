@@ -62,4 +62,9 @@ export const getBookData = (query: string) => {
     return axios.get<IBackendRes<IBookPaginate<IBookTable>>>(urlBackend);
 }
 
+export const getCategoryAPI = () => {
+    const urlBackend = '/api/v1/database/category';
+    return axios.get<IBackendRes<string[]>>(urlBackend);
+}
+
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }

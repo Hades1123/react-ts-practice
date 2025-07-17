@@ -8,6 +8,7 @@ import { useRef, useState } from 'react';
 import { DetailBook } from './book.detail';
 import { UploadFile } from 'antd/lib';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateBookModal } from './book.create';
 
 interface ISearch {
     mainText: string;
@@ -18,6 +19,7 @@ export const BookTable = () => {
     const [currentBook, setCurrentBook] = useState<IBookTable | null>(null);
     const [openDetailDescription, setOpenDetailDescription] = useState<boolean>(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
 
     const onClickViewDetail = (record: IBookTable) => {
         const mergeImagesList = [record.thumbnail, ...record.slider];
@@ -156,7 +158,7 @@ export const BookTable = () => {
                         key="button"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            actionRef.current?.reload();
+                            setIsOpenCreateModal(true)
                         }}
                         type="primary"
                     >
@@ -170,6 +172,10 @@ export const BookTable = () => {
                 currentBook={currentBook}
                 fileList={fileList}
                 setFileList={setFileList}
+            />
+            <CreateBookModal
+                isOpenCreateModal={isOpenCreateModal}
+                setIsOpenCreateModal={setIsOpenCreateModal}
             />
         </>
     );

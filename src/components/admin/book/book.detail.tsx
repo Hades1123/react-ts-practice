@@ -82,13 +82,6 @@ export const DetailBook = (props: IProps) => {
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
         setFileList(newFileList);
 
-    const uploadButton = (
-        <button style={{ border: 0, background: 'none' }} type="button">
-            <PlusOutlined />
-            <div style={{ marginTop: 8 }}>Upload</div>
-        </button>
-    );
-
     return (
         <>
             <Drawer
@@ -111,7 +104,6 @@ export const DetailBook = (props: IProps) => {
                             showRemoveIcon: false,
                         }}
                     >
-                        {fileList.length >= 8 ? null : uploadButton}
                     </Upload>
                     {previewImage && (
                         <Image

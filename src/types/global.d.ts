@@ -102,6 +102,7 @@ declare global {
         updatedAt: Date;
         createdAt: Date;
         thumbnail: string;
+        quantity: number;
     }
 
     interface IBookPaginate<T> {
