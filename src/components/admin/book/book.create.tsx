@@ -1,7 +1,7 @@
 import { getCategoryAPI } from "@/services/api";
 import { MAX_SIZE_IMAGE_FILE } from "@/services/helper";
 import { PlusOutlined } from "@ant-design/icons";
-import { App, Form, GetProp, Image, Input, InputNumber, Modal, Select, Upload, UploadFile, UploadProps } from "antd";
+import { App, Col, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, Upload, UploadFile, UploadProps } from "antd";
 import { FormProps } from "antd/lib";
 import { useEffect, useState } from "react";
 
@@ -19,15 +19,11 @@ export const CreateBookModal = (props: IProps) => {
     const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const [thumbnailList, setThumbnailList] = useState<UploadFile[]>([]);
-    const [sliderList, setSliderList] = useState<UploadFile[]>([]);
-    const [isAllowUpload, setIsAllowUpload] = useState<boolean>(false);
     const { message } = App.useApp();
 
     const onFinish: FormProps<IBookTable>['onFinish'] = (values) => {
         console.log('Success:', values);
     };
-
 
     const getBase64 = (file: FileType): Promise<string> =>
         new Promise((resolve, reject) => {
@@ -46,7 +42,6 @@ export const CreateBookModal = (props: IProps) => {
         if (!isLt2M) {
             message.error('Image must smaller than 2MB!');
         }
-        setIsAllowUpload(isJpgOrPng && isLt2M);
         return isJpgOrPng && isLt2M;
     };
 
@@ -59,25 +54,6 @@ export const CreateBookModal = (props: IProps) => {
         setPreviewOpen(true);
     };
 
-    const handleChangeThumbnailList: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        if (isAllowUpload) {
-            setThumbnailList(newFileList);
-            console.log(newFileList)
-        }
-        else {
-            setThumbnailList(newFileList.slice(0, -1));
-        }
-    }
-
-    const handleChangeSliderList: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        if (isAllowUpload) {
-            setSliderList(newFileList);
-            console.log(newFileList)
-        }
-        else {
-            setSliderList(newFileList.slice(0, -1))
-        }
-    }
 
     const uploadButton = (
         <button style={{ border: 0, background: 'none' }} type="button">
@@ -85,6 +61,24 @@ export const CreateBookModal = (props: IProps) => {
             <div style={{ marginTop: 8 }}>Upload</div>
         </button>
     );
+
+    const onOk = () => {
+        createForm.submit();
+    }
+
+    const normFile = (e: any) => {
+        console.log('Upload event:', e);
+        if (Array.isArray(e)) {
+            return e;
+        }
+        return e && e.fileList;
+    };
+
+    const handleUploadRequest: UploadProps['customRequest'] = ({ onSuccess }) => {
+        setTimeout(() => {
+            onSuccess!('Ok');
+        }, 0);
+    }
 
     useEffect(() => {
         const loadCategory = async () => {
@@ -107,99 +101,120 @@ export const CreateBookModal = (props: IProps) => {
                 title="Create new book"
                 closable={{ 'aria-label': 'Custom Close Button' }}
                 open={isOpenCreateModal}
-                onOk={() => setIsOpenCreateModal(false)}
+                onOk={onOk}
                 onCancel={() => setIsOpenCreateModal(false)}
                 maskClosable={false}
+                width={'50vw'}
             >
                 <Form
                     layout="vertical"
                     form={createForm}
                     name="Create book form"
-                    style={{ maxWidth: 600 }}
                     onFinish={onFinish}
                     autoComplete="off"
                 >
-                    <Form.Item<IBookTable>
-                        label="Title"
-                        name="mainText"
-                        rules={[{ required: true, message: 'Please input your title!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
+                    <Row gutter={30} >
+                        <Col xs={24} sm={24} lg={12}>
+                            <Form.Item<IBookTable>
+                                label="Title"
+                                name="mainText"
+                                rules={[{ required: true, message: 'Please input your title!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
 
-                    <Form.Item<IBookTable>
-                        label="Author"
-                        name="author"
-                        rules={[{ required: true, message: 'Please input your author!' }]}
-                    >
-                        <Input />
-                    </Form.Item>
+                        </Col>
 
-                    <Form.Item<IBookTable>
-                        label="Price"
-                        name="price"
-                        rules={[{ required: true, message: 'Please input your price!' }]}
-                    >
-                        <InputNumber
-                            addonAfter={'₫'}
-                            min={0}
-                        />
-                    </Form.Item>
+                        <Col xs={24} sm={24} lg={12}>
+                            <Form.Item<IBookTable>
+                                label="Author"
+                                name="author"
+                                rules={[{ required: true, message: 'Please input your author!' }]}
+                            >
+                                <Input />
+                            </Form.Item>
+                        </Col>
 
-                    <Form.Item<IBookTable>
-                        label="Category"
-                        name="category"
-                        rules={[{ required: true, message: 'Please input your category!' }]}
-                    >
-                        <Select
-                            style={{ width: 120 }}
-                            options={categoryList}
-                        />
-                    </Form.Item>
+                        <Col xs={12} sm={12} lg={6}>
+                            <Form.Item<IBookTable>
+                                label="Price"
+                                name="price"
+                                rules={[{ required: true, message: 'Please input your price!' }]}
+                            >
+                                <InputNumber
+                                    addonAfter={'₫'}
+                                    min={0}
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                />
+                            </Form.Item>
+                        </Col>
 
-                    <Form.Item<IBookTable>
-                        label="Quantity"
-                        name="quantity"
-                        rules={[{ required: true, message: 'Please input your quantity!' }]}
-                    >
-                        <InputNumber
-                            min={0}
-                        />
-                    </Form.Item>
+                        <Col xs={12} sm={12} lg={6}>
+                            <Form.Item<IBookTable>
+                                label="Category"
+                                name="category"
+                                rules={[{ required: true, message: 'Please input your category!' }]}
+                            >
+                                <Select
+                                    options={categoryList}
+                                />
+                            </Form.Item>
+                        </Col>
 
-                    <Form.Item<IBookTable>
-                        label="Thumbnail"
-                        name="thumbnail"
-                        rules={[{ required: true, message: 'Please input your thumbnail!' }]}
-                    >
-                        <Upload
-                            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                            listType="picture-card"
-                            onPreview={handlePreview}
-                            onChange={handleChangeThumbnailList}
-                            beforeUpload={beforeUpload}
-                            fileList={thumbnailList}
-                        >
-                            {thumbnailList.length >= 1 ? null : uploadButton}
-                        </Upload>
-                    </Form.Item>
+                        <Col xs={24} sm={24} lg={12}>
+                            <Form.Item<IBookTable>
+                                label="Quantity"
+                                name="quantity"
+                                rules={[{ required: true, message: 'Please input your quantity!' }]}
+                            >
+                                <InputNumber
+                                    min={0}
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                    style={{ width: '40%' }}
+                                />
+                            </Form.Item>
+                        </Col>
 
-                    <Form.Item<IBookTable>
-                        label="Slider"
-                        name="slider"
-                        rules={[{ required: true, message: 'Please input your slider!' }]}
-                    >
-                        <Upload
-                            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
-                            listType="picture-card"
-                            onPreview={handlePreview}
-                            onChange={handleChangeSliderList}
-                            beforeUpload={beforeUpload}
-                            fileList={sliderList}
-                        >
-                            {sliderList.length >= 3 ? null : uploadButton}
-                        </Upload>
-                    </Form.Item>
+                        <Col xs={24} md={24} lg={12}>
+                            <Form.Item<IBookTable>
+                                label="Thumbnail"
+                                name="thumbnail"
+                                rules={[{ required: true, message: 'Please input your thumbnail!' }]}
+                                valuePropName="fileList"
+                                getValueFromEvent={normFile}
+                            >
+                                <Upload
+                                    customRequest={handleUploadRequest}
+                                    listType="picture-card"
+                                    onPreview={handlePreview}
+                                    beforeUpload={beforeUpload}
+                                    maxCount={1}
+                                >
+                                    {uploadButton}
+                                </Upload>
+                            </Form.Item>
+                        </Col>
+
+                        <Col xs={24} sm={24} lg={12}>
+                            <Form.Item<IBookTable>
+                                label="Slider"
+                                name="slider"
+                                rules={[{ required: true, message: 'Please input your slider!' }]}
+                                valuePropName="fileList"
+                                getValueFromEvent={normFile}
+                            >
+                                <Upload
+                                    customRequest={handleUploadRequest}
+                                    multiple
+                                    listType="picture-card"
+                                    onPreview={handlePreview}
+                                    beforeUpload={beforeUpload}
+                                >
+                                    {uploadButton}
+                                </Upload>
+                            </Form.Item>
+                        </Col>
+                    </Row>
 
                     {previewImage && (
                         <Image
@@ -213,7 +228,7 @@ export const CreateBookModal = (props: IProps) => {
                         />
                     )}
                 </Form>
-            </Modal>
+            </Modal >
         </>
     )
 }
