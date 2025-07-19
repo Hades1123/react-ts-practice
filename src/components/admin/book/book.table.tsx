@@ -9,6 +9,7 @@ import { DetailBook } from './book.detail';
 import { UploadFile } from 'antd/lib';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateBookModal } from './book.create';
+import { UpdateBookModal } from './update.book';
 
 interface ISearch {
     mainText: string;
@@ -20,6 +21,7 @@ export const BookTable = () => {
     const [openDetailDescription, setOpenDetailDescription] = useState<boolean>(false);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
+    const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
 
     const onClickViewDetail = (record: IBookTable) => {
         const mergeImagesList = [record.thumbnail, ...record.slider];
@@ -37,6 +39,11 @@ export const BookTable = () => {
         setOpenDetailDescription(true);
     }
 
+    const handleUpdateBtn = (record: IBookTable) => {
+        setIsOpenUpdateModal(true);
+        setCurrentBook(record);
+
+    }
     const columns: ProColumns<IBookTable>[] = [
         {
             title: 'Id',
@@ -79,11 +86,13 @@ export const BookTable = () => {
         },
         {
             title: "Action",
-            render: () => {
+            render: (_, record) => {
                 return (
                     <>
                         <Space size="middle">
-                            <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} className='p-1' />
+                            <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} className='p-1'
+                                onClick={() => handleUpdateBtn(record)}
+                            />
                             <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} className='p-1' />
                         </Space>
                     </>
@@ -134,16 +143,6 @@ export const BookTable = () => {
                 editable={{
                     type: 'multiple',
                 }}
-                columnsState={{
-                    persistenceKey: 'pro-table-singe-demos',
-                    persistenceType: 'localStorage',
-                    defaultValue: {
-                        option: { fixed: 'right', disable: true },
-                    },
-                    onChange(value) {
-                        console.log('value: ', value);
-                    },
-                }}
                 rowKey="_id"
                 pagination={{
                     showSizeChanger: true,
@@ -177,11 +176,19 @@ export const BookTable = () => {
                 currentBook={currentBook}
                 fileList={fileList}
                 setFileList={setFileList}
+                setCurrentBook={setCurrentBook}
             />
             <CreateBookModal
                 isOpenCreateModal={isOpenCreateModal}
                 setIsOpenCreateModal={setIsOpenCreateModal}
                 refreshTable={refreshTable}
+            />
+            <UpdateBookModal
+                isOpenUpdateModal={isOpenUpdateModal}
+                setIsOpenUpdateModal={setIsOpenUpdateModal}
+                refreshTable={refreshTable}
+                currentBook={currentBook}
+                setCurrentBook={setCurrentBook}
             />
         </>
     );

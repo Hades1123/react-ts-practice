@@ -1,3 +1,5 @@
+import { UploadFile } from "antd";
+
 export { };
 
 declare global {

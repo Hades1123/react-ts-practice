@@ -1,4 +1,4 @@
-import { createBookAPI, getCategoryAPI, uploadFileAPI } from "@/services/api";
+import { getCategoryAPI, updateBookAPI, uploadFileAPI } from "@/services/api";
 import { MAX_SIZE_IMAGE_FILE } from "@/services/helper";
 import { PlusOutlined } from "@ant-design/icons";
 import { App, Col, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, Upload, UploadFile, UploadProps } from "antd";
@@ -11,14 +11,16 @@ type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type UserUploadType = "thumbnail" | 'slider';
 
 interface IProps {
-    isOpenCreateModal: boolean;
-    setIsOpenCreateModal: (v: boolean) => void;
+    isOpenUpdateModal: boolean;
+    setIsOpenUpdateModal: (v: boolean) => void;
     refreshTable: () => void;
+    currentBook: IBookTable | null;
+    setCurrentBook: (v: IBookTable | null) => void;
 }
 
-export const CreateBookModal = (props: IProps) => {
-    const { isOpenCreateModal, setIsOpenCreateModal, refreshTable } = props;
-    const [createForm] = Form.useForm();
+export const UpdateBookModal = (props: IProps) => {
+    const { isOpenUpdateModal, setIsOpenUpdateModal, refreshTable, currentBook, setCurrentBook } = props;
+    const [updateForm] = Form.useForm();
     const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -30,25 +32,26 @@ export const CreateBookModal = (props: IProps) => {
         console.log("values form: ", values, thumbnailList, sliderList);
         console.log("values fileListThumbnail: ", thumbnailList)
         console.log("values fileListSlider: ", sliderList)
-        const result = await createBookAPI(values, thumbnailList, sliderList);
+        const result = await updateBookAPI(values, thumbnailList, sliderList, currentBook?._id!);
         if (result.data) {
-            message.success('Create book successfully');
+            message.success('Update book successfully');
             clearAndCloseModal();
             refreshTable();
         }
         else {
             notification.error({
-                message: 'Create book failed',
+                message: 'Update book failed',
                 description: JSON.stringify(result.message)
             })
         }
     };
 
     const clearAndCloseModal = () => {
-        createForm.resetFields();
+        updateForm.resetFields();
         setSliderList([]);
         setThumbnailList([]);
-        setIsOpenCreateModal(false);
+        setIsOpenUpdateModal(false);
+        setCurrentBook(null);
     }
 
     const getBase64 = (file: FileType): Promise<string> =>
@@ -96,7 +99,7 @@ export const CreateBookModal = (props: IProps) => {
     );
 
     const onOk = () => {
-        createForm.submit();
+        updateForm.submit();
     }
 
     const normFile = (e: any) => {
@@ -134,6 +137,7 @@ export const CreateBookModal = (props: IProps) => {
     }
 
     useEffect(() => {
+        console.log(currentBook)
         const loadCategory = async () => {
             const result = await getCategoryAPI();
             if (result.data) {
@@ -145,25 +149,63 @@ export const CreateBookModal = (props: IProps) => {
                 }))
             }
         }
-        loadCategory();
-    }, [])
+        if (isOpenUpdateModal) {
+            updateForm.setFieldsValue({
+                mainText: currentBook?.mainText,
+                author: currentBook?.author,
+                price: currentBook?.price,
+                category: currentBook?.category,
+                quantity: currentBook?.quantity,
+            })
+            updateForm.setFieldValue('thumbnail', [{
+                uid: currentBook?.thumbnail,
+                name: currentBook?.thumbnail,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook?.thumbnail}`,
+            }])
+            updateForm.setFieldValue('slider', currentBook?.slider.map(item => {
+                return {
+                    uid: item,
+                    name: item,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+                }
+            }))
+            setThumbnailList([{
+                uid: currentBook?.thumbnail,
+                name: currentBook?.thumbnail,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook?.thumbnail}`,
+            }])
+            setSliderList(currentBook?.slider.map(item => {
+                return {
+                    uid: item,
+                    name: item,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+                }
+            }))
+            loadCategory();
+        }
+
+    }, [currentBook])
 
     return (
         <>
             <Modal
-                title="Create new book"
+                title="Update new book"
                 closable={{ 'aria-label': 'Custom Close Button' }}
-                open={isOpenCreateModal}
+                open={isOpenUpdateModal}
                 onOk={onOk}
                 onCancel={clearAndCloseModal}
                 maskClosable={false}
                 width={'50vw'}
-                okText={'Create'}
+                okText={'Update'}
             >
                 <Form
                     layout="vertical"
-                    form={createForm}
-                    name="Create book form"
+                    form={updateForm}
+                    name="Update book form"
                     onFinish={onFinish}
                     autoComplete="off"
                 >

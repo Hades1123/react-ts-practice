@@ -96,4 +96,18 @@ export const createBookAPI = (v: IBookTable, thumbnailList: UploadFile[], slider
     })
 }
 
+export const updateBookAPI = (v: IBookTable, thumbnailList: UploadFile[], sliderList: UploadFile[], id: string) => {
+    const urlBackend = `/api/v1/book/${id}`;
+    const { mainText, author, price, quantity, category } = v;
+    return axios.put<IBackendRes<IBookTable>>(urlBackend, {
+        thumbnail: thumbnailList.map(item => item.name)[0],
+        slider: sliderList.map(item => item.name),
+        mainText,
+        author,
+        price,
+        quantity,
+        category
+    })
+}
+
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }

@@ -11,14 +11,16 @@ interface IProps {
     currentBook: IBookTable | null;
     fileList: UploadFile[];
     setFileList: (v: UploadFile[]) => void;
+    setCurrentBook: (v: IBookTable | null) => void;
 }
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 export const DetailBook = (props: IProps) => {
-    const { openDetailDescription, setOpenDetailDescription, currentBook, fileList, setFileList } = props;
+    const { openDetailDescription, setOpenDetailDescription, currentBook, fileList, setFileList, setCurrentBook } = props;
     const onClose = () => {
         setOpenDetailDescription(false);
+        setCurrentBook(null);
     }
     const getBase64 = (file: FileType): Promise<string> =>
         new Promise((resolve, reject) => {
