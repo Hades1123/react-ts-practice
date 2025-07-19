@@ -1,3 +1,4 @@
+import { UploadFile } from 'antd';
 import axios from 'services/axios.customize';
 
 const loginAPI = (username: string, password: string) => {
@@ -78,6 +79,20 @@ export const uploadFileAPI = (fileImg: any, folder: string) => {
             "Content-Type": "multipart/form-data",
             "upload-type": folder
         }
+    })
+}
+
+export const createBookAPI = (v: IBookTable, thumbnailList: UploadFile[], sliderList: UploadFile[]) => {
+    const urlBackend = '/api/v1/book';
+    const { mainText, author, price, quantity, category } = v;
+    return axios.post<IBackendRes<IBookTable>>(urlBackend, {
+        thumbnail: thumbnailList.map(item => item.name)[0],
+        slider: sliderList.map(item => item.name),
+        mainText,
+        author,
+        price,
+        quantity,
+        category
     })
 }
 

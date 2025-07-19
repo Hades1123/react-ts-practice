@@ -93,6 +93,11 @@ export const BookTable = () => {
         }
     ];
     const actionRef = useRef<ActionType>();
+
+    const refreshTable = () => {
+        actionRef.current?.reload();
+    }
+
     return (
         <>
             <ProTable<IBookTable, ISearch>
@@ -176,6 +181,7 @@ export const BookTable = () => {
             <CreateBookModal
                 isOpenCreateModal={isOpenCreateModal}
                 setIsOpenCreateModal={setIsOpenCreateModal}
+                refreshTable={refreshTable}
             />
         </>
     );

@@ -98,10 +98,10 @@ declare global {
         author: string;
         price: number;
         category: string;
-        slider: string[];
+        slider: any;
         updatedAt: Date;
         createdAt: Date;
-        thumbnail: string;
+        thumbnail: any;
         quantity: number;
     }
 

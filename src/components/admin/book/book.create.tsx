@@ -1,4 +1,4 @@
-import { getCategoryAPI, uploadFileAPI } from "@/services/api";
+import { createBookAPI, getCategoryAPI, uploadFileAPI } from "@/services/api";
 import { MAX_SIZE_IMAGE_FILE } from "@/services/helper";
 import { PlusOutlined } from "@ant-design/icons";
 import { App, Col, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, Upload, UploadFile, UploadProps } from "antd";
@@ -13,23 +13,43 @@ type UserUploadType = "thumbnail" | 'slider';
 interface IProps {
     isOpenCreateModal: boolean;
     setIsOpenCreateModal: (v: boolean) => void;
+    refreshTable: () => void;
 }
 
 export const CreateBookModal = (props: IProps) => {
-    const { isOpenCreateModal, setIsOpenCreateModal } = props;
+    const { isOpenCreateModal, setIsOpenCreateModal, refreshTable } = props;
     const [createForm] = Form.useForm();
     const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
-    const { message } = App.useApp();
+    const { message, notification } = App.useApp();
     const [thumbnailList, setThumbnailList] = useState<UploadFile[]>([]);
     const [sliderList, setSliderList] = useState<UploadFile[]>([]);
 
-    const onFinish: FormProps<IBookTable>['onFinish'] = (values) => {
+    const onFinish: FormProps<IBookTable>['onFinish'] = async (values) => {
         console.log("values form: ", values, thumbnailList, sliderList);
         console.log("values fileListThumbnail: ", thumbnailList)
         console.log("values fileListSlider: ", sliderList)
+        const result = await createBookAPI(values, thumbnailList, sliderList);
+        if (result.data) {
+            message.success('Create book successfully');
+            clearAndCloseModal();
+            refreshTable();
+        }
+        else {
+            notification.error({
+                message: 'Create book failed',
+                description: JSON.stringify(result.message)
+            })
+        }
     };
+
+    const clearAndCloseModal = () => {
+        createForm.resetFields();
+        setSliderList([]);
+        setThumbnailList([]);
+        setIsOpenCreateModal(false);
+    }
 
     const getBase64 = (file: FileType): Promise<string> =>
         new Promise((resolve, reject) => {
@@ -135,12 +155,7 @@ export const CreateBookModal = (props: IProps) => {
                 closable={{ 'aria-label': 'Custom Close Button' }}
                 open={isOpenCreateModal}
                 onOk={onOk}
-                onCancel={() => {
-                    createForm.resetFields();
-                    setSliderList([]);
-                    setThumbnailList([]);
-                    setIsOpenCreateModal(false);
-                }}
+                onCancel={clearAndCloseModal}
                 maskClosable={false}
                 width={'50vw'}
             >
