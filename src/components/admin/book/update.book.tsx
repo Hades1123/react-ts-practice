@@ -138,43 +138,35 @@ export const UpdateBookModal = (props: IProps) => {
 
     useEffect(() => {
         if (isOpenUpdateModal) {
+            const thumbnailArr = [{
+                uid: currentBook?.thumbnail,
+                name: currentBook?.thumbnail,
+                status: 'done',
+                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook?.thumbnail}`,
+            }]
+
+            const sliderArr = currentBook?.slider.map(item => {
+                return {
+                    uid: item,
+                    name: item,
+                    status: 'done',
+                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
+                }
+            })
+
             updateForm.setFieldsValue({
                 mainText: currentBook?.mainText,
                 author: currentBook?.author,
                 price: currentBook?.price,
                 category: currentBook?.category,
                 quantity: currentBook?.quantity,
+                slider: sliderArr,
+                thumbnail: thumbnailArr,
             })
-            updateForm.setFieldValue('thumbnail', [{
-                uid: currentBook?.thumbnail,
-                name: currentBook?.thumbnail,
-                status: 'done',
-                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook?.thumbnail}`,
-            }])
-            updateForm.setFieldValue('slider', currentBook?.slider.map(item => {
-                return {
-                    uid: item,
-                    name: item,
-                    status: 'done',
-                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
-                }
-            }))
-            setThumbnailList([{
-                uid: currentBook?.thumbnail,
-                name: currentBook?.thumbnail,
-                status: 'done',
-                url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${currentBook?.thumbnail}`,
-            }])
-            setSliderList(currentBook?.slider.map(item => {
-                return {
-                    uid: item,
-                    name: item,
-                    status: 'done',
-                    url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
-                }
-            }))
-        }
 
+            setThumbnailList(thumbnailArr as any);
+            setSliderList(sliderArr as any);
+        }
     }, [currentBook])
 
     return (
