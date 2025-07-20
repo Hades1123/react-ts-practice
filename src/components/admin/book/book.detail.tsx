@@ -3,7 +3,7 @@ import { Badge, Descriptions, Drawer, Image, Upload } from 'antd';
 import type { DescriptionsProps, UploadFile, UploadProps } from 'antd';
 import dayjs from 'dayjs';
 import { GetProp } from 'antd/lib';
-import { PlusOutlined } from '@ant-design/icons';
+
 
 interface IProps {
     openDetailDescription: boolean;

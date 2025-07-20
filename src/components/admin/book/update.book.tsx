@@ -1,4 +1,4 @@
-import { getCategoryAPI, updateBookAPI, uploadFileAPI } from "@/services/api";
+import { updateBookAPI, uploadFileAPI } from "@/services/api";
 import { MAX_SIZE_IMAGE_FILE } from "@/services/helper";
 import { PlusOutlined } from "@ant-design/icons";
 import { App, Col, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, Upload, UploadFile, UploadProps } from "antd";
@@ -16,12 +16,12 @@ interface IProps {
     refreshTable: () => void;
     currentBook: IBookTable | null;
     setCurrentBook: (v: IBookTable | null) => void;
+    categoryList: { value: string, label: string }[];
 }
 
 export const UpdateBookModal = (props: IProps) => {
-    const { isOpenUpdateModal, setIsOpenUpdateModal, refreshTable, currentBook, setCurrentBook } = props;
+    const { isOpenUpdateModal, setIsOpenUpdateModal, refreshTable, currentBook, setCurrentBook, categoryList } = props;
     const [updateForm] = Form.useForm();
-    const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const { message, notification } = App.useApp();
@@ -137,18 +137,6 @@ export const UpdateBookModal = (props: IProps) => {
     }
 
     useEffect(() => {
-        console.log(currentBook)
-        const loadCategory = async () => {
-            const result = await getCategoryAPI();
-            if (result.data) {
-                setCategoryList(result.data.map(item => {
-                    return {
-                        value: item,
-                        label: item,
-                    }
-                }))
-            }
-        }
         if (isOpenUpdateModal) {
             updateForm.setFieldsValue({
                 mainText: currentBook?.mainText,
@@ -185,7 +173,6 @@ export const UpdateBookModal = (props: IProps) => {
                     url: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
                 }
             }))
-            loadCategory();
         }
 
     }, [currentBook])

@@ -1,10 +1,10 @@
-import { getBookData } from '@/services/api';
+import { getBookData, getCategoryAPI } from '@/services/api';
 import { DeleteOutlined, EditOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
 import { Button, Space } from 'antd';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DetailBook } from './book.detail';
 import { UploadFile } from 'antd/lib';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,6 +22,7 @@ export const BookTable = () => {
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
     const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
+    const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
 
     const onClickViewDetail = (record: IBookTable) => {
         const mergeImagesList = [record.thumbnail, ...record.slider];
@@ -107,6 +108,21 @@ export const BookTable = () => {
         actionRef.current?.reload();
     }
 
+    useEffect(() => {
+        const loadCategory = async () => {
+            const result = await getCategoryAPI();
+            if (result.data) {
+                setCategoryList(result.data.map(item => {
+                    return {
+                        value: item,
+                        label: item,
+                    }
+                }))
+            }
+        }
+        loadCategory();
+    }, [])
+
     return (
         <>
             <ProTable<IBookTable, ISearch>
@@ -114,7 +130,7 @@ export const BookTable = () => {
                 columns={columns}
                 actionRef={actionRef}
                 cardBordered
-                request={async (params, sort, filter) => {
+                request={async (params, sort) => {
                     // console.log({ params, sort, filter });
                     let query = `current=${params.current}&pageSize=${params.pageSize}`;
 
@@ -182,6 +198,7 @@ export const BookTable = () => {
                 isOpenCreateModal={isOpenCreateModal}
                 setIsOpenCreateModal={setIsOpenCreateModal}
                 refreshTable={refreshTable}
+                categoryList={categoryList}
             />
             <UpdateBookModal
                 isOpenUpdateModal={isOpenUpdateModal}
@@ -189,6 +206,7 @@ export const BookTable = () => {
                 refreshTable={refreshTable}
                 currentBook={currentBook}
                 setCurrentBook={setCurrentBook}
+                categoryList={categoryList}
             />
         </>
     );

@@ -1,9 +1,9 @@
-import { createBookAPI, getCategoryAPI, uploadFileAPI } from "@/services/api";
+import { createBookAPI, uploadFileAPI } from "@/services/api";
 import { MAX_SIZE_IMAGE_FILE } from "@/services/helper";
 import { PlusOutlined } from "@ant-design/icons";
 import { App, Col, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, Upload, UploadFile, UploadProps } from "antd";
 import { FormProps } from "antd/lib";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -14,12 +14,12 @@ interface IProps {
     isOpenCreateModal: boolean;
     setIsOpenCreateModal: (v: boolean) => void;
     refreshTable: () => void;
+    categoryList: { value: string, label: string }[];
 }
 
 export const CreateBookModal = (props: IProps) => {
-    const { isOpenCreateModal, setIsOpenCreateModal, refreshTable } = props;
+    const { isOpenCreateModal, setIsOpenCreateModal, refreshTable, categoryList } = props;
     const [createForm] = Form.useForm();
-    const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const { message, notification } = App.useApp();
@@ -132,21 +132,6 @@ export const CreateBookModal = (props: IProps) => {
             }
         }
     }
-
-    useEffect(() => {
-        const loadCategory = async () => {
-            const result = await getCategoryAPI();
-            if (result.data) {
-                setCategoryList(result.data.map(item => {
-                    return {
-                        value: item,
-                        label: item,
-                    }
-                }))
-            }
-        }
-        loadCategory();
-    }, [])
 
     return (
         <>
