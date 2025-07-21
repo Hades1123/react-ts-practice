@@ -116,4 +116,12 @@ declare global {
         }
         result: T[]
     }
+
+    interface IBookComponent {
+        thumbnail: string,
+        mainText: string,
+        price: number,
+        rating: 5,
+        sold: 1000,
+    }
 }
