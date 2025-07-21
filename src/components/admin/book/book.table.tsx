@@ -2,7 +2,7 @@ import { getBookData, getCategoryAPI } from '@/services/api';
 import { DeleteOutlined, EditOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Space } from 'antd';
+import { Button, Modal, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { DetailBook } from './book.detail';
@@ -10,6 +10,7 @@ import { UploadFile } from 'antd/lib';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateBookModal } from './book.create';
 import { UpdateBookModal } from './update.book';
+import { CSVLink } from 'react-csv';
 
 interface ISearch {
     mainText: string;
@@ -23,6 +24,14 @@ export const BookTable = () => {
     const [isOpenCreateModal, setIsOpenCreateModal] = useState<boolean>(false);
     const [isOpenUpdateModal, setIsOpenUpdateModal] = useState<boolean>(false);
     const [categoryList, setCategoryList] = useState<{ value: string, label: string }[]>([]);
+    const [openExportModal, setOpenExportModal] = useState<boolean>(false);
+    const [currentBookTable, setCurrentBookTable] = useState<IBookTable[]>([]);
+    const [metaData, setMetaData] = useState<{ query: string, page: number, pageSize: number, totalPage: number }>({
+        query: '',
+        page: 1,
+        pageSize: 5,
+        totalPage: 0,
+    });
 
     const onClickViewDetail = (record: IBookTable) => {
         const mergeImagesList = [record.thumbnail, ...record.slider];
@@ -45,6 +54,18 @@ export const BookTable = () => {
         setCurrentBook(record);
 
     }
+
+    const handleButtonExport = async () => {
+        setOpenExportModal(true);
+        const result =
+            await getBookData(metaData.query
+                .replace(`pageSize=${metaData.pageSize}`, `pageSize=${metaData.totalPage}`)
+                .replace(`current=${metaData.page}`, `current=${1}`));
+        if (result.data) {
+            setCurrentBookTable(result.data.result);
+        }
+    }
+
     const columns: ProColumns<IBookTable>[] = [
         {
             title: 'Id',
@@ -131,7 +152,7 @@ export const BookTable = () => {
                 actionRef={actionRef}
                 cardBordered
                 request={async (params, sort) => {
-                    // console.log({ params, sort, filter });
+                    console.log({ params, sort });
                     let query = `current=${params.current}&pageSize=${params.pageSize}`;
 
                     if (params.mainText) {
@@ -146,8 +167,20 @@ export const BookTable = () => {
                         const value = sort[key] === 'ascend' ? `${key}` : `-${key}`;
                         query += `&sort=${value}`;
                     }
+                    else {
+                        query += `&sort=-updatedAt`;
+                    }
 
                     const result = await getBookData(query);
+
+                    if (result.data) {
+                        setMetaData({
+                            query: query,
+                            page: result.data.meta.current,
+                            pageSize: result.data.meta.pageSize,
+                            totalPage: result.data.meta.total,
+                        })
+                    }
 
                     return {
                         data: result.data?.result,
@@ -171,6 +204,7 @@ export const BookTable = () => {
                         key="button"
                         icon={<ExportOutlined />}
                         type="primary"
+                        onClick={() => handleButtonExport()}
                     >
                         Export
                     </Button>,
@@ -208,6 +242,22 @@ export const BookTable = () => {
                 setCurrentBook={setCurrentBook}
                 categoryList={categoryList}
             />
+
+            {/* export csv file modal  */}
+            <Modal
+                title="Export modal"
+                closable={{ 'aria-label': 'Custom Close Button' }}
+                open={openExportModal}
+                onCancel={() => setOpenExportModal(false)}
+                footer={[
+                    <Button type='primary' onClick={() => setOpenExportModal(false)}>Cancel</Button>,
+                    <Button type='primary'>
+                        <CSVLink data={currentBookTable} filename='user.csv' onClick={() => setOpenExportModal(false)}>Export</CSVLink>
+                    </Button>,
+                ]}
+            >
+                Do you want to export this book.csv file ?
+            </Modal>,
         </>
     );
 };

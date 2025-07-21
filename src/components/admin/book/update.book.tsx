@@ -30,11 +30,10 @@ export const UpdateBookModal = (props: IProps) => {
     const [sliderList, setSliderList] = useState<UploadFile[]>([]);
     const [loadingSlider, setLoadingSlider] = useState<boolean>(false);
     const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
     const onFinish: FormProps<IBookTable>['onFinish'] = async (values) => {
-        console.log("values form: ", values, thumbnailList, sliderList);
-        console.log("values fileListThumbnail: ", thumbnailList)
-        console.log("values fileListSlider: ", sliderList)
+        setIsSubmit(true);
         const result = await updateBookAPI(values, thumbnailList, sliderList, currentBook?._id!);
         if (result.data) {
             message.success('Update book successfully');
@@ -47,6 +46,7 @@ export const UpdateBookModal = (props: IProps) => {
                 description: JSON.stringify(result.message)
             })
         }
+        setIsSubmit(false);
     };
 
     const clearAndCloseModal = () => {
@@ -192,6 +192,9 @@ export const UpdateBookModal = (props: IProps) => {
                 maskClosable={false}
                 width={'50vw'}
                 okText={'Update'}
+                okButtonProps={{
+                    loading: isSubmit
+                }}
             >
                 <Form
                     layout="vertical"
