@@ -1,10 +1,11 @@
 import { updateBookAPI, uploadFileAPI } from "@/services/api";
 import { MAX_SIZE_IMAGE_FILE } from "@/services/helper";
-import { PlusOutlined } from "@ant-design/icons";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import { App, Col, Form, GetProp, Image, Input, InputNumber, Modal, Row, Select, Upload, UploadFile, UploadProps } from "antd";
 import { FormProps } from "antd/lib";
 import { useEffect, useState } from "react";
 import { UploadRequestOption as RcCustomRequestOptions } from 'rc-upload/lib/interface';
+import { UploadChangeParam } from "antd/es/upload";
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -27,6 +28,8 @@ export const UpdateBookModal = (props: IProps) => {
     const { message, notification } = App.useApp();
     const [thumbnailList, setThumbnailList] = useState<UploadFile[]>([]);
     const [sliderList, setSliderList] = useState<UploadFile[]>([]);
+    const [loadingSlider, setLoadingSlider] = useState<boolean>(false);
+    const [loadingThumbnail, setLoadingThumbnail] = useState<boolean>(false);
 
     const onFinish: FormProps<IBookTable>['onFinish'] = async (values) => {
         console.log("values form: ", values, thumbnailList, sliderList);
@@ -133,6 +136,15 @@ export const UpdateBookModal = (props: IProps) => {
             else {
                 message.error(res.message);
             }
+        }
+    }
+
+    const handleChangeUpload = (info: UploadChangeParam<UploadFile<any>>, type: UserUploadType) => {
+        if (info.file.status == 'uploading') {
+            type == 'slider' ? setLoadingSlider(true) : setLoadingThumbnail(true);
+        }
+        else if (info.file.status == 'done') {
+            type == 'slider' ? setLoadingSlider(false) : setLoadingThumbnail(false);
         }
     }
 
@@ -266,8 +278,18 @@ export const UpdateBookModal = (props: IProps) => {
                                     maxCount={1}
                                     onRemove={(file) => handleRemove(file, 'thumbnail')}
                                     fileList={thumbnailList}
+                                    onChange={(info) => handleChangeUpload(info, 'thumbnail')}
                                 >
-                                    {uploadButton}
+                                    {loadingThumbnail ?
+                                        <button style={{ border: 0, background: 'none' }} type="button">
+                                            <LoadingOutlined />
+                                            <div style={{ marginTop: 8 }}>Upload</div>
+                                        </button>
+                                        :
+                                        <button style={{ border: 0, background: 'none' }} type="button">
+                                            <PlusOutlined />
+                                            <div style={{ marginTop: 8 }}>Upload</div>
+                                        </button>}
                                 </Upload>
                             </Form.Item>
                         </Col>
@@ -288,8 +310,18 @@ export const UpdateBookModal = (props: IProps) => {
                                     beforeUpload={beforeUpload}
                                     onRemove={(file) => handleRemove(file, 'slider')}
                                     fileList={sliderList}
+                                    onChange={(info) => handleChangeUpload(info, 'slider')}
                                 >
-                                    {uploadButton}
+                                    {loadingSlider ?
+                                        <button style={{ border: 0, background: 'none' }} type="button">
+                                            <LoadingOutlined />
+                                            <div style={{ marginTop: 8 }}>Upload</div>
+                                        </button>
+                                        :
+                                        <button style={{ border: 0, background: 'none' }} type="button">
+                                            <PlusOutlined />
+                                            <div style={{ marginTop: 8 }}>Upload</div>
+                                        </button>}
                                 </Upload>
                             </Form.Item>
                         </Col>
