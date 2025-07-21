@@ -1,8 +1,8 @@
-import { getBookData, getCategoryAPI } from '@/services/api';
+import { deleteBookAPI, getBookData, getCategoryAPI } from '@/services/api';
 import { DeleteOutlined, EditOutlined, ExportOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Button, Modal, Space } from 'antd';
+import { Button, message, Modal, notification, Popconfirm, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useRef, useState } from 'react';
 import { DetailBook } from './book.detail';
@@ -32,6 +32,7 @@ export const BookTable = () => {
         pageSize: 5,
         totalPage: 0,
     });
+    const [isDelete, setIsDelete] = useState<boolean>(false);
 
     const onClickViewDetail = (record: IBookTable) => {
         const mergeImagesList = [record.thumbnail, ...record.slider];
@@ -64,6 +65,22 @@ export const BookTable = () => {
         if (result.data) {
             setCurrentBookTable(result.data.result);
         }
+    }
+
+    const handleDeleteBook = async (id: string) => {
+        setIsDelete(true);
+        const result = await deleteBookAPI(id);
+        if (result.data) {
+            message.success('Delete book successfully');
+            actionRef.current?.reload();
+        }
+        else {
+            notification.error({
+                message: 'Delete book failed',
+                description: JSON.stringify(result.message),
+            })
+        }
+        setIsDelete(false);
     }
 
     const columns: ProColumns<IBookTable>[] = [
@@ -115,7 +132,19 @@ export const BookTable = () => {
                             <EditOutlined style={{ color: 'orange', cursor: 'pointer' }} className='p-1'
                                 onClick={() => handleUpdateBtn(record)}
                             />
-                            <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} className='p-1' />
+                            <Popconfirm
+                                title="Delete the book"
+                                description="Are you sure to delete this book?"
+                                onConfirm={() => handleDeleteBook(record._id)}
+                                okText="Delete"
+                                cancelText="Cancel"
+                                placement='leftTop'
+                                okButtonProps={{
+                                    loading: isDelete,
+                                }}
+                            >
+                                <DeleteOutlined style={{ color: 'red', cursor: 'pointer' }} className='p-1' />
+                            </Popconfirm>
                         </Space>
                     </>
                 )
