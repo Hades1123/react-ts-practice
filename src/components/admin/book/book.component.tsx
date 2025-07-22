@@ -14,7 +14,7 @@ export const BookComponent = (props: IBookComponent) => {
                 </div>
                 <div className='rating'>
                     <Rate value={rating} disabled style={{ color: '#ffce3d', fontSize: 10 }} />
-                    <span>Đã bán {sold}</span>
+                    <span>Đã bán {sold ?? 0}</span>
                 </div>
             </div>
         </div>
