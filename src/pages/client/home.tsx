@@ -86,7 +86,7 @@ const HomePage = () => {
             children: <></>,
         },
         {
-            key: '-updatedAt',
+            key: '-createdAt',
             label: `Hàng Mới`,
             children: <></>,
         },
@@ -194,41 +194,43 @@ const HomePage = () => {
                     </Col>
 
                     <Col md={20} xs={24}>
-                        <div className='bg-[#fff] p-5 rounded-[5px]'>
-                            <Row>
-                                <Tabs
-                                    defaultActiveKey="sort=-sold"
-                                    items={items}
-                                    onChange={(value) => setSortQuery(value)}
-                                    style={{ overflowX: "auto" }}
-                                />
-                            </Row>
-                            <Row className='customize-row'>
-                                {bookList.map((item, index) => {
-                                    return (
-                                        <BookComponent
-                                            key={index}
-                                            thumbnail={item.thumbnail}
-                                            mainText={item.mainText}
-                                            price={item.price}
-                                            rating={5}
-                                            sold={item.sold}
-                                        />
-                                    )
-                                })}
-                            </Row>
-                            <Row className='flex justify-center mt-10'>
-                                <Pagination
-                                    total={totalPage}
-                                    pageSize={pageSize}
-                                    current={currentPage}
-                                    responsive
-                                    onChange={(page) => onChangePage(page)}
-                                    onShowSizeChange={(page, pageSize) => onShowSizeChange(page, pageSize)}
-                                    showSizeChanger
-                                />
-                            </Row>
-                        </div>
+                        <Spin spinning={isLoading} tip={'Loading...'}>
+                            <div className='bg-[#fff] p-5 rounded-[5px]'>
+                                <Row>
+                                    <Tabs
+                                        defaultActiveKey="sort=-sold"
+                                        items={items}
+                                        onChange={(value) => setSortQuery(value)}
+                                        style={{ overflowX: "auto" }}
+                                    />
+                                </Row>
+                                <Row className='customize-row'>
+                                    {bookList.map((item, index) => {
+                                        return (
+                                            <BookComponent
+                                                key={index}
+                                                thumbnail={item.thumbnail}
+                                                mainText={item.mainText}
+                                                price={item.price}
+                                                rating={5}
+                                                sold={item.sold}
+                                            />
+                                        )
+                                    })}
+                                </Row>
+                                <Row className='flex justify-center mt-10'>
+                                    <Pagination
+                                        total={totalPage}
+                                        pageSize={pageSize}
+                                        current={currentPage}
+                                        responsive
+                                        onChange={(page) => onChangePage(page)}
+                                        onShowSizeChange={(page, pageSize) => onShowSizeChange(page, pageSize)}
+                                        showSizeChanger
+                                    />
+                                </Row>
+                            </div>
+                        </Spin>
                     </Col>
                 </Row>
             </div>
