@@ -7,10 +7,11 @@ import { useEffect, useState } from 'react';
 import 'styles/home.scss';
 
 type FieldType = {
-    fullName: string;
-    password: string;
-    email: string;
-    phone: string;
+    category: string[];
+    range: {
+        from: number,
+        to: number,
+    };
 };
 
 
@@ -25,13 +26,21 @@ const HomePage = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [filter, setFilter] = useState<string>('');
     const [sortQuery, setSortQuery] = useState<string>('-sold');
+    const [priceRange, setPriceRange] = useState<string>('');
 
-    const handleChangeFilter = (changedValues: any, values: any) => {
-        console.log(">>> check handleChangeFilter", changedValues, values)
+    const handleChangeFilter = (changedValues: any) => {
+        if (changedValues && changedValues['category'].length !== 0) {
+            setFilter(`category=${changedValues['category'].toString()}`);
+        }
+        else {
+            setFilter('');
+        }
     }
 
     const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-
+        console.log('>>> check values', values.range.from, values.range.to);
+        let query = String('&price>=' + (values.range.from ? values.range.from : '0') + '&price<' + (values.range.to ? values.range.to : '0'));
+        setPriceRange(query);
     }
 
     const onChangePage = (page: number) => {
@@ -46,10 +55,13 @@ const HomePage = () => {
         setIsLoading(true);
         let query = `current=${currentPage}&pageSize=${pageSize}`;
         if (filter) {
-            query += `&filter=${filter}`;
+            query += `&${filter}`;
         }
         if (sortQuery) {
             query += `&sort=${sortQuery}`;
+        }
+        if (priceRange) {
+            query += priceRange;
         }
         const result = await getBookData(query);
         if (result && result.data) {
@@ -77,7 +89,7 @@ const HomePage = () => {
 
     useEffect(() => {
         fetchBook();
-    }, [currentPage, pageSize, filter, sortQuery])
+    }, [currentPage, pageSize, filter, sortQuery, priceRange])
 
     const items = [
         {
@@ -110,12 +122,16 @@ const HomePage = () => {
                         <div className='p-5 bg-[#fff] rounded-[5px]'>
                             <div className='flex justify-between'>
                                 <span> <FilterTwoTone /> Bộ lọc tìm kiếm</span>
-                                <ReloadOutlined title="Reset" onClick={() => form.resetFields()} />
+                                <ReloadOutlined title="Reset" onClick={() => {
+                                    form.resetFields();
+                                    setFilter('');
+                                    setPriceRange('');
+                                }} />
                             </div>
                             <Form
                                 onFinish={onFinish}
                                 form={form}
-                                onValuesChange={(changedValues, values) => handleChangeFilter(changedValues, values)}
+                                onValuesChange={(changedValues) => handleChangeFilter(changedValues)}
                             >
                                 <Form.Item
                                     name="category"
