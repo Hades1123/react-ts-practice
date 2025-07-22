@@ -105,6 +105,7 @@ declare global {
         createdAt: Date;
         thumbnail: any;
         quantity: number;
+        sold: number;
     }
 
     interface IBookPaginate<T> {
@@ -122,6 +123,6 @@ declare global {
         mainText: string,
         price: number,
         rating: 5,
-        sold: 1000,
+        sold: number,
     }
 }

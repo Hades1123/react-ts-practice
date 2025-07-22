@@ -108,13 +108,13 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<App>
-			<ContextWrapper>
-				<ConfigProvider locale={enUS}>
-					<RouterProvider router={router} />
-				</ConfigProvider>
-			</ContextWrapper>
-		</App>
-	</StrictMode>
+	// <StrictMode>
+	<App>
+		<ContextWrapper>
+			<ConfigProvider locale={enUS}>
+				<RouterProvider router={router} />
+			</ConfigProvider>
+		</ContextWrapper>
+	</App>
+	// </StrictMode>
 )

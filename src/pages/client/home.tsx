@@ -1,7 +1,7 @@
 import { BookComponent } from '@/components/admin/book/book.component';
-import { getCategoryAPI } from '@/services/api';
+import { getBookData, getCategoryAPI } from '@/services/api';
 import { FilterTwoTone, ReloadOutlined } from '@ant-design/icons';
-import { Row, Col, Form, Checkbox, Divider, InputNumber, Button, Rate, Tabs, Pagination } from 'antd';
+import { Row, Col, Form, Checkbox, Divider, InputNumber, Button, Rate, Tabs, Pagination, notification } from 'antd';
 import type { FormProps } from 'antd';
 import { useEffect, useState } from 'react';
 import 'styles/home.scss';
@@ -18,6 +18,10 @@ const HomePage = () => {
 
     const [form] = Form.useForm();
     const [categoryList, setCategoryList] = useState<string[]>([]);
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [pageSize, setPageSize] = useState<number>(5);
+    const [totalPage, setTotalPage] = useState<number>(500);
+    const [bookList, setBookList] = useState<IBookTable[]>([]);
 
     const handleChangeFilter = (changedValues: any, values: any) => {
         console.log(">>> check handleChangeFilter", changedValues, values)
@@ -31,6 +35,14 @@ const HomePage = () => {
         console.log(key);
     };
 
+    const onChangePage = (page: number) => {
+        setCurrentPage(page);
+    }
+
+    const onShowSizeChange = (page: number, pageSize: number) => {
+        setPageSize(pageSize);
+    }
+
     useEffect(() => {
         const loadCategory = async () => {
             const result = await getCategoryAPI();
@@ -38,8 +50,40 @@ const HomePage = () => {
                 setCategoryList(result.data);
             }
         }
+
+        const loadBookTableData = async () => {
+            const result = await getBookData(`current=${currentPage}&pageSize=${pageSize}&sort=-sold`);
+            if (result && result.data) {
+                setBookList(result.data.result);
+                setTotalPage(result.data.meta.total);
+            }
+            else {
+                notification.error({
+                    message: 'Call API get book with paginate failed',
+                    description: JSON.stringify(result.message),
+                })
+            }
+        }
         loadCategory();
+        loadBookTableData();
     }, [])
+
+    useEffect(() => {
+        const loadBookTableData = async () => {
+            const result = await getBookData(`current=${currentPage}&pageSize=${pageSize}&sort=-sold`);
+            if (result && result.data) {
+                setBookList(result.data.result);
+                setTotalPage(result.data.meta.total);
+            }
+            else {
+                notification.error({
+                    message: 'Call API get book with paginate failed',
+                    description: JSON.stringify(result.message),
+                })
+            }
+        }
+        loadBookTableData();
+    }, [currentPage, pageSize])
 
     const items = [
         {
@@ -150,15 +194,15 @@ const HomePage = () => {
                         />
                     </Row>
                     <Row className='customize-row'>
-                        {new Array(8).fill(0).map((item, index) => {
+                        {bookList.map((item, index) => {
                             return (
                                 <BookComponent
                                     key={index}
-                                    thumbnail='3-931186dd6dcd231da1032c8220332fea.jpg'
-                                    mainText='Tư Duy Về Tiền Bạc - Những Lựa Chọn Tài Chính Đúng Đắn Và Sáng Suốt Hơn'
-                                    price={70000}
+                                    thumbnail={item.thumbnail}
+                                    mainText={item.mainText}
+                                    price={item.price}
                                     rating={5}
-                                    sold={1000}
+                                    sold={item.sold}
                                 />
                             )
                         })}
@@ -166,9 +210,13 @@ const HomePage = () => {
                     <Divider />
                     <Row className='flex justify-center'>
                         <Pagination
-                            defaultCurrent={1}
-                            total={500}
+                            total={totalPage}
+                            pageSize={pageSize}
+                            current={currentPage}
                             responsive
+                            onChange={(page) => onChangePage(page)}
+                            onShowSizeChange={(page, pageSize) => onShowSizeChange(page, pageSize)}
+                            showSizeChanger
                         />
                     </Row>
                 </Col>
