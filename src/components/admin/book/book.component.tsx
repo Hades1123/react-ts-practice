@@ -1,9 +1,9 @@
 import { Rate } from "antd"
 
 export const BookComponent = (props: IBookComponent) => {
-    const { thumbnail, mainText, price, rating, sold } = props;
+    const { thumbnail, mainText, price, rating, sold, onClick } = props;
     return (
-        <div className="column">
+        <div className="column" onClick={onClick}>
             <div className='wrapper'>
                 <div className='thumbnail'>
                     <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${thumbnail}`} alt="thumbnail book" />

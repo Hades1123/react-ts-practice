@@ -124,5 +124,6 @@ declare global {
         price: number,
         rating: 5,
         sold: number,
+        onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     }
 }

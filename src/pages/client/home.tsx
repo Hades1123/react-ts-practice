@@ -4,6 +4,7 @@ import { FilterTwoTone, ReloadOutlined } from '@ant-design/icons';
 import { Row, Col, Form, Checkbox, Divider, InputNumber, Button, Rate, Tabs, Pagination, notification, Spin } from 'antd';
 import type { FormProps } from 'antd';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import 'styles/home.scss';
 
 type FieldType = {
@@ -27,6 +28,7 @@ const HomePage = () => {
     const [filter, setFilter] = useState<string>('');
     const [sortQuery, setSortQuery] = useState<string>('-sold');
     const [priceRange, setPriceRange] = useState<string>('');
+    const navigate = useNavigate();
 
     const handleChangeFilter = (changedValues: any) => {
         if (changedValues && changedValues['category'].length !== 0) {
@@ -157,34 +159,29 @@ const HomePage = () => {
                                     label="Khoảng giá"
                                     labelCol={{ span: 24 }}
                                 >
-                                    <Row gutter={[10, 10]} style={{ width: '100%' }}>
-                                        <div className='flex justify-around'>
-                                            <Col xl={11} md={24}>
-                                                <Form.Item name={["range", 'from']}>
-                                                    <InputNumber
-                                                        name='from'
-                                                        min={0}
-                                                        placeholder="from VND"
-                                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                                        style={{ width: '100%' }}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col xl={2} md={0}>
-                                                <span>-</span>
-                                            </Col>
-                                            <Col xl={11} md={24}>
-                                                <Form.Item name={["range", 'to']}>
-                                                    <InputNumber
-                                                        name='to'
-                                                        min={0}
-                                                        placeholder="to VND"
-                                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                                        style={{ width: '100%' }}
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                        </div>
+                                    <Row style={{ width: '100%' }}>
+                                        <Col span={24}>
+                                            <Form.Item name={["range", 'from']}>
+                                                <InputNumber
+                                                    name='from'
+                                                    min={0}
+                                                    placeholder="from VND"
+                                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                        <Col span={24}>
+                                            <Form.Item name={["range", 'to']}>
+                                                <InputNumber
+                                                    name='to'
+                                                    min={0}
+                                                    placeholder="to VND"
+                                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                    style={{ width: '100%' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
                                     </Row>
                                     <div>
                                         <Button onClick={() => form.submit()}
@@ -230,6 +227,7 @@ const HomePage = () => {
                                                 price={item.price}
                                                 rating={5}
                                                 sold={item.sold}
+                                                onClick={() => navigate(`/book/${item._id}`)}
                                             />
                                         )
                                     })}
