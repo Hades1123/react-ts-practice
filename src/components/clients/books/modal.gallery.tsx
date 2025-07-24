@@ -1,6 +1,7 @@
 import { Col, Image, Modal, Row } from "antd";
 import { useEffect, useRef, useState } from "react";
 import ImageGallery from 'react-image-gallery';
+import { useMediaQuery } from "react-responsive";
 import 'styles/book.scss'
 
 interface IProps {
@@ -13,12 +14,12 @@ interface IProps {
         originalClass: string;
         thumbnailClass: string;
     }[]
-    title: string;
 }
 
 export const ModalGallery = (props: IProps) => {
-    const { isOpen, setIsOpen, currentIndex, items, title } = props;
+    const { isOpen, setIsOpen, currentIndex, items } = props;
     const [activeIndex, setActiveIndex] = useState(0);
+    const isMobile = useMediaQuery({ maxWidth: 767 });
     const refGallery = useRef<ImageGallery>(null);
 
     useEffect(() => {
@@ -30,11 +31,10 @@ export const ModalGallery = (props: IProps) => {
     return (
         <>
             <Modal
-                width={'100vw'}
+                width={isMobile ? '100vw' : '60vw'}
                 open={isOpen}
                 onCancel={() => setIsOpen(false)}
                 footer={null}
-                closable={false}
                 className="modal-gallery"
             >
                 <Row gutter={[20, 20]}>
@@ -48,11 +48,10 @@ export const ModalGallery = (props: IProps) => {
                             showThumbnails={false}
                             onSlide={(i) => setActiveIndex(i)}
                             slideDuration={0}
-
+                            lazyLoad={true}
                         />
                     </Col>
-                    <Col md={8}>
-                        <div>{title}</div>
+                    <Col md={8} sm={0} xs={0}>
                         <Row gutter={[20, 20]}>
                             {
                                 items.map((item, index) => {
