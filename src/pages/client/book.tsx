@@ -1,3 +1,4 @@
+import { LoaderSkeleton } from "@/components/clients/books/book.loader";
 import { DetailBook } from "@/components/clients/books/detail.book"
 import { getBookWithIdAPI } from "@/services/api";
 import { App } from "antd";
@@ -10,8 +11,10 @@ const BookPage = () => {
     let { id } = useParams();
     const [currentBook, setCurrentBook] = useState<IBookTable | null>(null);
     const { notification } = App.useApp();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const fetchBook = async (id: string) => {
+        setIsLoading(true);
         const result = await getBookWithIdAPI(id);
         if (result && result.data) {
             setCurrentBook(result.data);
@@ -22,6 +25,7 @@ const BookPage = () => {
                 description: JSON.stringify(result.message),
             })
         }
+        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -32,9 +36,13 @@ const BookPage = () => {
 
     return (
         <>
-            <DetailBook
-                currentBook={currentBook}
-            />
+            {true ?
+                <LoaderSkeleton />
+                :
+                <DetailBook
+                    currentBook={currentBook}
+                />
+            }
         </>
     )
 }

@@ -18,6 +18,7 @@ export const DetailBook = (props: IProps) => {
     const refGallery = useRef<ImageGallery>(null);
     const refGalleryDesktop = useRef<ImageGallery>(null);
 
+
     const images = [currentBook?.thumbnail, ...currentBook?.slider ?? []].map((item) => {
         return {
             original: `${import.meta.env.VITE_BACKEND_URL}/images/book/${item}`,
@@ -96,6 +97,7 @@ export const DetailBook = (props: IProps) => {
                                             onClick={() => setQuantity((prev) => (+prev + 1) + '')}
                                         ><PlusOutlined /></button>
                                         <input
+                                            placeholder='0'
                                             type="tel"
                                             value={quantity}
                                             className='border-1 p-2 border-gray-200 text-center w-[50px]'
