@@ -1,9 +1,7 @@
 import { FileImageOutlined } from '@ant-design/icons';
 import { Skeleton, Row, Col } from 'antd';
 
-
 export const LoaderSkeleton = () => {
-
     return (
         <>
             <div className='bg-[#efefef] p-5'>
@@ -34,13 +32,13 @@ export const LoaderSkeleton = () => {
                                     </div>
                                 </Col>
                                 <Col span={24}>
-                                    <Skeleton.Input size='large' active={true} block={true} className='mb-2' />
-                                    <Skeleton.Input size='large' active={true} block={true} className='mb-2' />
-                                    <Skeleton.Input size='large' active={true} block={true} className='mb-4' />
-                                    <Skeleton.Input size='large' active={true} block={false} className='mb-16' />
+                                    <Skeleton.Input size='small' active={true} block={true} className='mb-2' />
+                                    <Skeleton.Input size='small' active={true} block={true} className='mb-2' />
+                                    <Skeleton.Input size='small' active={true} block={true} className='mb-4' />
+                                    <Skeleton.Input size='small' active={true} block={false} className='mb-16' />
                                     <div className='flex gap-4'>
-                                        <Skeleton.Button active={true} size='large' />
-                                        <Skeleton.Button active={true} size='large' />
+                                        <Skeleton.Button active={true} size='small' />
+                                        <Skeleton.Button active={true} size='small' />
                                     </div>
                                 </Col>
                             </Col>

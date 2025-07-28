@@ -36,7 +36,7 @@ const BookPage = () => {
 
     return (
         <>
-            {true ?
+            {isLoading ?
                 <LoaderSkeleton />
                 :
                 <DetailBook
