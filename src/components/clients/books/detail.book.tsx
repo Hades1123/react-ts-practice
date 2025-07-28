@@ -1,6 +1,6 @@
-import { Row, Col, Rate, Divider } from 'antd';
+import { Row, Col, Rate, Divider, App } from 'antd';
 import ImageGallery from 'react-image-gallery';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import 'styles/book.scss';
 import buttonStyles from 'styles/button.module.scss'
@@ -23,7 +23,8 @@ export const DetailBook = (props: IProps) => {
     const refGallery = useRef<ImageGallery>(null);
     const refGalleryDesktop = useRef<ImageGallery>(null);
     const [quantity, setQuantity] = useState<number | string>(1);
-    const { shoppingCart, setShoppingCart } = useCurrentApp();
+    const { setShoppingCart } = useCurrentApp();
+    const { message } = App.useApp();
 
     const images = [currentBook?.thumbnail, ...currentBook?.slider ?? []].map((item) => {
         return {
@@ -52,7 +53,7 @@ export const DetailBook = (props: IProps) => {
             setQuantity('');
         }
         else if (+value > currentBook?.quantity! || +value <= 0) {
-            setQuantity(currentBook?.quantity!);
+            setQuantity(0);
         }
         else {
             setQuantity(+value)
@@ -105,14 +106,8 @@ export const DetailBook = (props: IProps) => {
             }
             setShoppingCart(JSON.parse(localStorage.getItem('cart')!));
         }
-        console.log('shopping cart: ', shoppingCart)
+        message.success('Thêm vào giỏ hàng thành công!')
     }
-
-    useEffect(() => {
-        if (localStorage.getItem('cart')) {
-            setShoppingCart(JSON.parse(localStorage.getItem('cart')!))
-        }
-    }, [])
 
     return (
         <>

@@ -13,7 +13,7 @@ import { logoutAPI } from 'services/api';
 
 const AppHeader = (props: any) => {
     const [openDrawer, setOpenDrawer] = useState(false);
-    const { isAuthenticated, setIsAuthenticated, user, setUser } = useCurrentApp();
+    const { isAuthenticated, setIsAuthenticated, user, setUser, shoppingCart } = useCurrentApp();
     const navigate = useNavigate();
 
     const handleLogout = async () => {
@@ -119,7 +119,7 @@ const AppHeader = (props: any) => {
                                     arrow={true}>
                                     <Badge
                                         // count={carts?.length ?? 0}
-                                        count={10}
+                                        count={shoppingCart.length}
                                         size={"small"}
                                         showZero
                                     >

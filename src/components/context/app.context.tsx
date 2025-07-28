@@ -32,6 +32,10 @@ const ContextWrapper = (props: TProps) => {
             if (result.data) {
                 setUser(result.data.user);
                 setIsAuthenticated(true);
+                const carts = localStorage.getItem('cart');
+                if (carts) {
+                    setShoppingCart(JSON.parse(carts))
+                }
             }
             setIsAppLoading(false);
         }
