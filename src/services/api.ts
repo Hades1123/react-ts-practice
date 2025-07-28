@@ -117,7 +117,11 @@ export const deleteBookAPI = (id: string) => {
 
 export const getBookWithIdAPI = (id: string) => {
     const urlBackend = `/api/v1/book/${id}`;
-    return axios.get<IBackendRes<IBookTable>>(urlBackend);
+    return axios.get<IBackendRes<IBookTable>>(urlBackend, {
+        headers: {
+            delay: 2000,
+        }
+    });
 }
 
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }

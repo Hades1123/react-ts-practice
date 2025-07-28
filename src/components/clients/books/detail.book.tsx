@@ -17,7 +17,7 @@ export const DetailBook = (props: IProps) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const refGallery = useRef<ImageGallery>(null);
     const refGalleryDesktop = useRef<ImageGallery>(null);
-
+    const [quantity, setQuantity] = useState<number | string>(1);
 
     const images = [currentBook?.thumbnail, ...currentBook?.slider ?? []].map((item) => {
         return {
@@ -27,8 +27,6 @@ export const DetailBook = (props: IProps) => {
             thumbnailClass: "thumbnail-image"
         }
     })
-
-    const [quantity, setQuantity] = useState<string>('');
 
     const handleOnClickImageDesktop = () => {
         console.log(refGalleryDesktop.current?.getCurrentIndex())
@@ -42,6 +40,33 @@ export const DetailBook = (props: IProps) => {
         setCurrentIndex(refGallery.current?.getCurrentIndex() ?? 0);
     }
 
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        if (value == '') {
+            setQuantity('');
+        }
+        else if (+value > currentBook?.quantity! || +value <= 0) {
+            setQuantity(currentBook?.quantity!);
+        }
+        else {
+            setQuantity(+value)
+        }
+    }
+
+    const increaseQuantity = () => {
+        if (+quantity < currentBook?.quantity!) {
+            if (+quantity == 0) {
+                setQuantity(1);
+            }
+            setQuantity(+quantity + 1);
+        }
+    }
+
+    const decreaseQuantity = () => {
+        if (+quantity > 1) {
+            setQuantity(+quantity - 1)
+        }
+    }
     return (
         <>
             <div className='bg-[#efefef] p-5'>
@@ -94,28 +119,18 @@ export const DetailBook = (props: IProps) => {
                                     <span className='mx-8'>
                                         <button
                                             className='bg-white border-1 border-gray-200 p-2 hover:cursor-pointer'
-                                            onClick={() => setQuantity((prev) => (+prev + 1) + '')}
+                                            onClick={increaseQuantity}
                                         ><PlusOutlined /></button>
                                         <input
-                                            placeholder='0'
-                                            type="tel"
+                                            type="number"
                                             value={quantity}
-                                            className='border-1 p-2 border-gray-200 text-center w-[50px]'
-                                            onChange={(event) => {
-                                                setQuantity(+event.target.value > 1000
-                                                    ? currentBook?.quantity + ''
-                                                    : event.target.value
-                                                )
-                                            }}
+                                            className='border-1 p-2 border-gray-200 text-center w-[50px] no-spinner'
+                                            onChange={onChange}
+
                                         />
                                         <button
                                             className='bg-white border-1 border-gray-200 p-2 hover:cursor-pointer'
-                                            onClick={() => setQuantity((prev) => {
-                                                if (+prev == 0) {
-                                                    return '0';
-                                                }
-                                                return (+prev - 1) + '';
-                                            })}
+                                            onClick={decreaseQuantity}
                                         ><MinusOutlined /></button>
                                     </span>
                                     <div className='flex gap-8 mt-16'>
