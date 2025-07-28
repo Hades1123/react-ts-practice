@@ -1,10 +1,11 @@
 import { Row, Col, Rate, Divider } from 'antd';
 import ImageGallery from 'react-image-gallery';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import 'styles/book.scss';
 import buttonStyles from 'styles/button.module.scss'
 import { ModalGallery } from './modal.gallery';
+import { useCurrentApp } from '@/components/context/app.context';
 
 
 interface IProps {
@@ -22,6 +23,7 @@ export const DetailBook = (props: IProps) => {
     const refGallery = useRef<ImageGallery>(null);
     const refGalleryDesktop = useRef<ImageGallery>(null);
     const [quantity, setQuantity] = useState<number | string>(1);
+    const { shoppingCart, setShoppingCart } = useCurrentApp();
 
     const images = [currentBook?.thumbnail, ...currentBook?.slider ?? []].map((item) => {
         return {
@@ -69,6 +71,48 @@ export const DetailBook = (props: IProps) => {
             }
         }
     }
+
+    const onClickCart = () => {
+        let storeShoppingCart = localStorage.getItem('cart')
+        if (!storeShoppingCart) {
+            localStorage.setItem('cart', JSON.stringify([{
+                _id: currentBook?._id!,
+                quantity: +quantity,
+                detail: currentBook
+            }]))
+            setShoppingCart([{
+                _id: currentBook?._id!,
+                quantity: +quantity,
+                detail: currentBook
+            }])
+        }
+        else {
+            let found = false;
+            const currentStorage = JSON.parse(localStorage.getItem('cart')!) as IShoppingCart[];
+            currentStorage.forEach(item => {
+                if (item._id === currentBook?._id) {
+                    item.quantity += +quantity;
+                    found = true;
+                    localStorage.setItem('cart', JSON.stringify(currentStorage))
+                }
+            })
+            if (!found) {
+                localStorage.setItem('cart', JSON.stringify([...currentStorage, {
+                    _id: currentBook?._id,
+                    quantity: +quantity,
+                    detail: currentBook,
+                }]))
+            }
+            setShoppingCart(JSON.parse(localStorage.getItem('cart')!));
+        }
+        console.log('shopping cart: ', shoppingCart)
+    }
+
+    useEffect(() => {
+        if (localStorage.getItem('cart')) {
+            setShoppingCart(JSON.parse(localStorage.getItem('cart')!))
+        }
+    }, [])
 
     return (
         <>
@@ -137,7 +181,7 @@ export const DetailBook = (props: IProps) => {
                                         ><MinusOutlined /></button>
                                     </span>
                                     <div className='flex gap-8 mt-16'>
-                                        <button className={buttonStyles.cart}><ShoppingCartOutlined /> Add to cart</button>
+                                        <button className={buttonStyles.cart} onClick={onClickCart}><ShoppingCartOutlined /> Add to cart</button>
                                         <button className={buttonStyles.buy}>Buy</button>
                                     </div>
                                 </Col>

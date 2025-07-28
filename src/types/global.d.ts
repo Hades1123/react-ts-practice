@@ -126,4 +126,12 @@ declare global {
         sold: number,
         onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
     }
+
+    interface IShoppingCart {
+        _id: string;
+        quantity: number;
+        detail: null | IBookTable;
+    }
+
+
 }

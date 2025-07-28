@@ -10,6 +10,8 @@ interface IContextType {
     setUser: (value: IUser | null) => void;
     isAppLoading: boolean;
     setIsAppLoading: (v: boolean) => void;
+    shoppingCart: IShoppingCart[];
+    setShoppingCart: (v: IShoppingCart[]) => void;
 }
 
 const AppContext = createContext<IContextType | null>(null);
@@ -22,6 +24,7 @@ const ContextWrapper = (props: TProps) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<IUser | null>(null);
     const [isAppLoading, setIsAppLoading] = useState<boolean>(true);
+    const [shoppingCart, setShoppingCart] = useState<IShoppingCart[]>([])
 
     useEffect(() => {
         const fetchAccount = async () => {
@@ -42,7 +45,8 @@ const ContextWrapper = (props: TProps) => {
                     value={{
                         isAuthenticated, setIsAuthenticated,
                         user, setUser,
-                        isAppLoading, setIsAppLoading
+                        isAppLoading, setIsAppLoading,
+                        shoppingCart, setShoppingCart,
                     }}>
                     {props.children}
                 </AppContext.Provider>
