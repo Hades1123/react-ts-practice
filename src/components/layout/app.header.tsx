@@ -25,6 +25,10 @@ const AppHeader = () => {
         }
     }
 
+    const onClick = () => {
+        navigate('/order');
+    }
+
     let items = [
         {
             label: <label
@@ -84,6 +88,7 @@ const AppHeader = () => {
                     <div className='flex justify-end'>
                         <button
                             className='bg-red-500 text-white p-4 text-[1rem] rounded-sm hover:cursor-pointer active:scale-95 active:bg-red-500/50'
+                            onClick={onClick}
                         >
                             Xem giỏ hàng
                         </button>
@@ -124,7 +129,8 @@ const AppHeader = () => {
                                     rootClassName="popover-carts"
                                     title={"Sản phẩm mới thêm"}
                                     content={contentPopover}
-                                    arrow={true}>
+                                    arrow={true}
+                                >
                                     <Badge
                                         count={shoppingCart.length}
                                         size={"small"}

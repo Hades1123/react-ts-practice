@@ -20,6 +20,7 @@ import ManageUserPage from 'pages/admin/manage.user';
 import LayoutAdmin from 'components/layout/layout.admin';
 import { StrictMode } from 'react';
 import enUS from 'antd/locale/en_US';
+import { UserOrder } from './pages/client/order.tsx';
 
 
 const router = createBrowserRouter([
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
 						<div>checkout page</div>
 					</ProtectedRoute>
 				),
+			},
+			{
+				path: '/order',
+				element: <UserOrder />
 			}
 		]
 	},
