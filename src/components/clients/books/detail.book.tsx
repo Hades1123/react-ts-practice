@@ -11,6 +11,10 @@ interface IProps {
     currentBook: IBookTable | null;
 }
 
+enum UserAction {
+    'MINUS', 'PLUS'
+}
+
 export const DetailBook = (props: IProps) => {
     const { currentBook } = props;
     const [isOpenModalGallery, setIsOpenModalGallery] = useState(false);
@@ -53,20 +57,19 @@ export const DetailBook = (props: IProps) => {
         }
     }
 
-    const increaseQuantity = () => {
-        if (+quantity < currentBook?.quantity!) {
-            if (+quantity == 0) {
-                setQuantity(1);
+    const handleInputBtn = (userAction: UserAction) => {
+        if (userAction == UserAction.MINUS) {
+            if (+quantity > 1) {
+                setQuantity(+quantity - 1);
             }
-            setQuantity(+quantity + 1);
+        }
+        else if (userAction == UserAction.PLUS) {
+            if (+quantity < currentBook?.quantity!) {
+                setQuantity(+quantity + 1);
+            }
         }
     }
 
-    const decreaseQuantity = () => {
-        if (+quantity > 1) {
-            setQuantity(+quantity - 1)
-        }
-    }
     return (
         <>
             <div className='bg-[#efefef] p-5'>
@@ -119,7 +122,7 @@ export const DetailBook = (props: IProps) => {
                                     <span className='mx-8'>
                                         <button
                                             className='bg-white border-1 border-gray-200 p-2 hover:cursor-pointer'
-                                            onClick={increaseQuantity}
+                                            onClick={() => handleInputBtn(UserAction.PLUS)}
                                         ><PlusOutlined /></button>
                                         <input
                                             type="number"
@@ -130,7 +133,7 @@ export const DetailBook = (props: IProps) => {
                                         />
                                         <button
                                             className='bg-white border-1 border-gray-200 p-2 hover:cursor-pointer'
-                                            onClick={decreaseQuantity}
+                                            onClick={() => handleInputBtn(UserAction.MINUS)}
                                         ><MinusOutlined /></button>
                                     </span>
                                     <div className='flex gap-8 mt-16'>
