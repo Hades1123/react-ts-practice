@@ -11,7 +11,7 @@ import { useCurrentApp } from 'components/context/app.context';
 import { logoutAPI } from 'services/api';
 
 
-const AppHeader = (props: any) => {
+const AppHeader = () => {
     const [openDrawer, setOpenDrawer] = useState(false);
     const { isAuthenticated, setIsAuthenticated, user, setUser, shoppingCart } = useCurrentApp();
     const navigate = useNavigate();
@@ -58,30 +58,38 @@ const AppHeader = (props: any) => {
 
     const contentPopover = () => {
         return (
-            <div className='pop-cart-body'>
-                {/* <div className='pop-cart-content'>
-                    {carts?.map((book, index) => {
-                        return (
-                            <div className='book' key={`book-${index}`}>
-                                <img src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${book?.detail?.thumbnail}`} />
-                                <div>{book?.detail?.mainText}</div>
-                                <div className='price'>
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(book?.detail?.price ?? 0)}
-                                </div>
-                            </div>
-                        )
-                    })}
-                </div>
-                {carts.length > 0 ?
-                    <div className='pop-cart-footer'>
-                        <button onClick={() => navigate('/order')}>Xem giỏ hàng</button>
+            <>
+                <div className='w-[400px]'>
+                    <div className='max-h-[440px] overflow-y-auto pr-2 mb-2'>
+                        {
+                            shoppingCart.map(item => {
+                                return (
+                                    <div className='flex' key={item._id}>
+                                        <img
+                                            src={`${import.meta.env.VITE_BACKEND_URL}/images/book/${item.detail?.thumbnail}`} alt="image"
+                                            className='w-[80px] h-[80px] object-contain mb-2'
+                                        />
+                                        <div>
+                                            <h1 className='overflow-hidden'>{item.detail?.mainText}</h1>
+                                            <div className='text-red-500'>{item.detail?.price.toLocaleString('vi', {
+                                                style: 'currency',
+                                                currency: 'VND'
+                                            })}</div>
+                                        </div>
+                                    </div>
+                                )
+                            })
+                        }
                     </div>
-                    :
-                    <Empty
-                        description="Không có sản phẩm trong giỏ hàng"
-                    />
-                } */}
-            </div>
+                    <div className='flex justify-end'>
+                        <button
+                            className='bg-red-500 text-white p-4 text-[1rem] rounded-sm hover:cursor-pointer active:scale-95 active:bg-red-500/50'
+                        >
+                            Xem giỏ hàng
+                        </button>
+                    </div>
+                </div>
+            </>
         )
     }
     return (
@@ -118,7 +126,6 @@ const AppHeader = (props: any) => {
                                     content={contentPopover}
                                     arrow={true}>
                                     <Badge
-                                        // count={carts?.length ?? 0}
                                         count={shoppingCart.length}
                                         size={"small"}
                                         showZero
