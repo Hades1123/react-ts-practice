@@ -1,12 +1,66 @@
 import { useCurrentApp } from "@/components/context/app.context"
 import { DeleteOutlined } from "@ant-design/icons";
-import { Col, Divider, InputNumber, Row } from "antd"
+import { Button, Col, Divider, Form, Input, InputNumber, Radio, Row, Steps, theme } from "antd"
+import TextArea from "antd/es/input/TextArea";
+import { FormProps } from "antd/lib";
 import { useEffect, useState } from "react";
+
+type FieldType = {
+    deliveryMethod?: string;
+    fullName?: string;
+    phone?: string;
+    address?: string;
+};
 
 export const DetailOrder = () => {
 
     const { shoppingCart, setShoppingCart } = useCurrentApp();
     const [totalPrice, setTotalPrice] = useState<number>(0);
+    const { token } = theme.useToken();
+    const [current, setCurrent] = useState(0);
+    const [form] = Form.useForm();
+
+    const next = () => {
+        setCurrent(current + 1);
+    };
+
+    const prev = () => {
+        setCurrent(current - 1);
+    };
+
+    const steps = [
+        {
+            title: 'Đơn hàng',
+            content: '',
+        },
+        {
+            title: 'Đặt hàng',
+            content: '',
+        },
+        {
+            title: 'Thanh toán',
+            content: '',
+        },
+    ];
+    const items = steps.map((item) => ({ key: item.title, title: item.title }));
+
+    const contentStyle: React.CSSProperties = {
+        lineHeight: '260px',
+        textAlign: 'center',
+        color: token.colorTextTertiary,
+        backgroundColor: token.colorFillAlter,
+        borderRadius: token.borderRadiusLG,
+        border: `1px dashed ${token.colorBorder}`,
+        marginTop: 16,
+    };
+
+    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+        console.log('Success:', values);
+    };
+
+    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
 
     useEffect(() => {
         let sum = 0;
@@ -19,9 +73,14 @@ export const DetailOrder = () => {
     return (
         <>
             <div className="bg-gray-200">
-                <div className="mx-[20px]">
-                    <Row gutter={[10, 10]}>
-                        <Col md={18} xs={24}>
+                <div className="md:mx-[150px]">
+                    <Row gutter={[20, 10]}>
+                        <Col span={24} className="mt-4">
+                            <div className="bg-white rounded-sm p-2">
+                                <Steps current={current} items={items} onChange={(value) => setCurrent(value)} />
+                            </div>
+                        </Col>
+                        <Col md={16} xs={24}>
                             {
                                 shoppingCart.map((item) => {
                                     let currentPrice = item.quantity * item.detail?.price!;;
@@ -76,21 +135,91 @@ export const DetailOrder = () => {
                                 })
                             }
                         </Col>
-                        <Col md={6} xs={24}>
+                        <Col md={8} xs={24}>
                             <div className="bg-white my-4 p-4 rounded-sm">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-2xl">Tạm tính</span>
-                                    <span>{totalPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</span>
-                                </div>
-                                <Divider />
-                                <div className="flex justify-between items-center">
-                                    <span className="text-2xl">Tổng tiền</span>
-                                    <span className="text-2xl text-red-500">{totalPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</span>
-                                </div>
-                                <Divider />
-                                <div>
-                                    <button className="bg-red-500 w-[100%] p-4 text-[1rem] text-white hover:cursor-pointer active:scale-95">Thanh toán</button>
-                                </div>
+                                {current == 1 && (
+                                    <>
+                                        <Form
+                                            form={form}
+                                            layout="vertical"
+                                            name="Thanh toán"
+                                            onFinish={onFinish}
+                                            onFinishFailed={onFinishFailed}
+                                            autoComplete="off"
+                                            initialValues={{ "deliveryMethod": "BANKING" }}
+                                        >
+                                            <Form.Item<FieldType>
+                                                label="Hình thức thanh toán"
+                                                name="deliveryMethod"
+                                                rules={[{ required: true, message: 'Vui lòng chọn hình thức thanh toán!' }]}
+                                            >
+                                                <Radio.Group>
+                                                    <Radio value={'COD'} style={{ width: '100%' }}>Thanh toán khi nhận hàng</Radio>
+                                                    <Radio value={'BANKING'}>Thanh toán bằng tài khoản ngân hàng</Radio>
+                                                </Radio.Group>
+                                            </Form.Item>
+
+                                            <Form.Item<FieldType>
+                                                label="Họ và tên"
+                                                name="fullName"
+                                                rules={[{ required: true, message: 'Please input your full name!' }]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+
+                                            <Form.Item<FieldType>
+                                                label="Số điện thoại"
+                                                name="phone"
+                                                rules={[{ required: true, message: 'Please input your phone number!' }]}
+                                            >
+                                                <Input />
+                                            </Form.Item>
+
+                                            <Form.Item<FieldType>
+                                                label="Địa chỉ"
+                                                name="address"
+                                                rules={[{ required: true, message: 'Please input your address!' }]}
+                                            >
+                                                <TextArea rows={4} placeholder="Tối đa 200 kí tự" maxLength={200} />
+                                            </Form.Item>
+                                        </Form>
+                                    </>
+                                )}
+                                {(current == 0 || current == 1) && (
+                                    <>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[16px]">Tạm tính</span>
+                                            <span>{totalPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</span>
+                                        </div>
+                                        <Divider />
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-[20px]">Tổng tiền</span>
+                                            <span className="text-2xl text-red-500">{totalPrice.toLocaleString('vi', { style: 'currency', currency: 'VND' })}</span>
+                                        </div>
+                                        <Divider />
+                                        <div>
+                                            {current == 0 && (
+                                                <button
+                                                    className="bg-red-500 w-[100%] p-4 text-[1rem] text-white hover:cursor-pointer active:scale-95"
+                                                    onClick={() => {
+                                                        setCurrent(current + 1);
+                                                    }}
+                                                >Mua hàng ({shoppingCart.length})</button>
+                                            )}
+                                            {
+                                                current == 1 && (
+                                                    <button
+                                                        className="bg-red-500 w-[100%] p-4 text-[1rem] text-white hover:cursor-pointer active:scale-95"
+                                                        onClick={() => {
+                                                            // setCurrent(current + 1);
+                                                            form.submit();
+                                                        }}
+                                                    >Mua hàng ({shoppingCart.length})</button>
+                                                )
+                                            }
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </Col>
                     </Row>
