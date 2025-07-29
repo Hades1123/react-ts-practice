@@ -135,7 +135,7 @@ export const DetailOrder = () => {
                                     <Button key="console">
                                         <NavLink to={'/'}>Trang chủ</NavLink>
                                     </Button>,
-                                    <Button key="buy">Lịch sử mua hàng</Button>,
+                                    <Button key="buy"><NavLink to={'/history'}>Lịch sử mua hàng</NavLink></Button>,
                                 ]}
                             />
                         )

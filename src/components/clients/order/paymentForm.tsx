@@ -47,6 +47,7 @@ export const Payment = (props: IProps) => {
         })
         setIsLoading(false);
         if (result.data) {
+            window.scrollTo(0, 0);
             message.success('order successfully !!!');
             setCurrent(current + 1);
             localStorage.removeItem('cart');

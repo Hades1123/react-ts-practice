@@ -145,4 +145,17 @@ declare global {
             _id: string;
         }[]
     }
+
+    interface IOrderHistoryType {
+        createdAt: Date;
+        detail: {
+            bookName: string;
+            quantity: number;
+            _id: string;
+        }[];
+        totalPrice: number;
+        paymentStatus: string;
+    }
+
+
 }

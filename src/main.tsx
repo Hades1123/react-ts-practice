@@ -21,6 +21,7 @@ import LayoutAdmin from 'components/layout/layout.admin';
 import { StrictMode } from 'react';
 import enUS from 'antd/locale/en_US';
 import { OrderPage } from './pages/client/order.tsx';
+import { HistoryPage } from './pages/client/history.tsx';
 
 
 const router = createBrowserRouter([
@@ -50,7 +51,19 @@ const router = createBrowserRouter([
 			},
 			{
 				path: '/order',
-				element: <OrderPage />
+				element: (
+					<ProtectedRoute>
+						<OrderPage />
+					</ProtectedRoute>
+				)
+			},
+			{
+				path: '/history',
+				element: (
+					<ProtectedRoute>
+						<HistoryPage />
+					</ProtectedRoute>
+				)
 			}
 		]
 	},

@@ -133,4 +133,9 @@ export const createOrderBookAPI = (value: IOrderBookType) => {
     });
 }
 
+export const getOrderHistoryAPI = () => {
+    const urlBackend = `/api/v1/history`;
+    return axios.get<IBackendRes<IOrderHistoryType[]>>(urlBackend);
+}
+
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }
