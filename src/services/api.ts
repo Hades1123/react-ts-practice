@@ -119,7 +119,7 @@ export const getBookWithIdAPI = (id: string) => {
     const urlBackend = `/api/v1/book/${id}`;
     return axios.get<IBackendRes<IBookTable>>(urlBackend, {
         headers: {
-            delay: 2000,
+            delay: 1000,
         }
     });
 }
