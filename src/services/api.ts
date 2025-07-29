@@ -124,4 +124,13 @@ export const getBookWithIdAPI = (id: string) => {
     });
 }
 
+export const createOrderBookAPI = (value: IOrderBookType) => {
+    const urlBackend = `/api/v1/order`;
+    return axios.post<IBackendRes<any>>(urlBackend, value, {
+        headers: {
+            delay: 1000,
+        }
+    });
+}
+
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }

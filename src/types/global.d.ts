@@ -133,5 +133,16 @@ declare global {
         detail: null | IBookTable;
     }
 
-
+    interface IOrderBookType {
+        name: string;
+        address: string;
+        phone: string;
+        totalPrice: number;
+        type: any;
+        detail: {
+            bookName: string;
+            quantity: number;
+            _id: string;
+        }[]
+    }
 }

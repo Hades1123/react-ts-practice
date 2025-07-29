@@ -1,8 +1,9 @@
 import { useCurrentApp } from "@/components/context/app.context"
 import { DeleteOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Col, InputNumber, Row, Steps } from "antd"
+import { Button, Col, InputNumber, Result, Row, Steps } from "antd"
 import { useEffect, useState } from "react";
 import { Payment } from "./paymentForm";
+import { NavLink } from "react-router-dom";
 
 
 export const DetailOrder = () => {
@@ -36,9 +37,9 @@ export const DetailOrder = () => {
 
     return (
         <>
-            <div className="bg-gray-200 h-[100vh]">
+            <div className="bg-gray-200 h-[120vh]">
                 <div className="md:mx-[150px]">
-                    {shoppingCart.length === 0 ? (
+                    {(shoppingCart.length === 0 && current !== items.length - 1) ? (
 
                         <Row>
                             <Col span={24}>
@@ -56,7 +57,7 @@ export const DetailOrder = () => {
                         <Row gutter={[20, 10]}>
                             <Col span={24} className="mt-4">
                                 <div className="bg-white rounded-sm p-2">
-                                    <Steps current={current} items={items} onChange={(value) => setCurrent(value)} />
+                                    <Steps current={current} items={items} />
                                 </div>
                             </Col>
                             <Col md={16} xs={24}>
@@ -117,15 +118,28 @@ export const DetailOrder = () => {
                                 }
                             </Col>
                             <Col md={8} xs={24}>
-                                <div className="bg-white my-4 p-4 rounded-sm">
-                                    <Payment
-                                        current={current}
-                                        setCurrent={setCurrent}
-                                        totalPrice={totalPrice}
-                                    />
-                                </div>
+                                <Payment
+                                    current={current}
+                                    setCurrent={setCurrent}
+                                    totalPrice={totalPrice}
+                                />
                             </Col>
                         </Row>}
+                    {
+                        current === items.length - 1 && (
+                            <Result
+                                status="success"
+                                title="Đặt hàng thành công"
+                                subTitle="Hệ thống đã ghi nhận đơn hàng của bạn"
+                                extra={[
+                                    <Button key="console">
+                                        <NavLink to={'/'}>Trang chủ</NavLink>
+                                    </Button>,
+                                    <Button key="buy">Lịch sử mua hàng</Button>,
+                                ]}
+                            />
+                        )
+                    }
                 </div>
             </div>
         </>
