@@ -22,6 +22,7 @@ import { StrictMode } from 'react';
 import enUS from 'antd/locale/en_US';
 import { OrderPage } from './pages/client/order.tsx';
 import { HistoryPage } from './pages/client/history.tsx';
+import { Testing } from './pages/test/test.tsx';
 
 
 const router = createBrowserRouter([
@@ -122,6 +123,10 @@ const router = createBrowserRouter([
 		path: "/register",
 		element: <RegisterPage />,
 	},
+	{
+		path: 'test',
+		element: <Testing />
+	}
 
 ]);
 

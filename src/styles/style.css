@@ -1,5 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ultra&display=swap');
 @import "tailwindcss";
-@tailwind utilities;
 /* html{
     font-size: 100%
 } */
+:root{
+    --my-variable: 50%, 50%;
+}
+
+@theme{
+    --font-ultra : 'Ultra';
+    --font-roboto: 'Roboto';
+    --font-Bitcount_Prop_Single : 'Bitcount_Prop_Single';
+    --font-Source_Code_Pro: 'Source_Code_Pro',
+}
