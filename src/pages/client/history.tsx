@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 
 export const HistoryPage = () => {
-    const [currentHistory, setCurrentHistory] = useState<IOrderHistoryType[]>([]);
+    const [currentHistory, setCurrentHistory] = useState<IOrderType[]>([]);
     const [openDetailHistory, setOpenDetailHistory] = useState<boolean>(false);
     const [currentData, setCurrentData] = useState<{
         bookName: string;
@@ -15,7 +15,7 @@ export const HistoryPage = () => {
         _id: string;
     }[]>([]);
 
-    const columns: TableProps<IOrderHistoryType>['columns'] = [
+    const columns: TableProps<IOrderType>['columns'] = [
         {
             title: 'STT',
             dataIndex: 'stt',
@@ -55,7 +55,6 @@ export const HistoryPage = () => {
         const loadData = async () => {
             const result = await getOrderHistoryAPI();
             if (result.data) {
-                message.success('get successfully')
                 setCurrentHistory(result.data);
             }
         }

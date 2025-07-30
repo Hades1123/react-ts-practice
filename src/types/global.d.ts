@@ -133,29 +133,27 @@ declare global {
         detail: null | IBookTable;
     }
 
-    interface IOrderBookType {
+    interface IOrderType {
+        _id: string;
         name: string;
         address: string;
         phone: string;
-        totalPrice: number;
         type: any;
-        detail: {
-            bookName: string;
-            quantity: number;
-            _id: string;
-        }[]
-    }
-
-    interface IOrderHistoryType {
-        createdAt: Date;
+        paymentStatus: string;
+        paymentRef: string;
         detail: {
             bookName: string;
             quantity: number;
             _id: string;
         }[];
         totalPrice: number;
-        paymentStatus: string;
+        createdAt: Date;
+        updatedAt: Date;
     }
 
-
+    interface IDashboardType {
+        countOrder: number;
+        countUser: number;
+        countBook: number;
+    }
 }

@@ -124,7 +124,7 @@ export const getBookWithIdAPI = (id: string) => {
     });
 }
 
-export const createOrderBookAPI = (value: IOrderBookType) => {
+export const createOrderBookAPI = (value: IOrderType) => {
     const urlBackend = `/api/v1/order`;
     return axios.post<IBackendRes<any>>(urlBackend, value, {
         headers: {
@@ -135,7 +135,7 @@ export const createOrderBookAPI = (value: IOrderBookType) => {
 
 export const getOrderHistoryAPI = () => {
     const urlBackend = `/api/v1/history`;
-    return axios.get<IBackendRes<IOrderHistoryType[]>>(urlBackend);
+    return axios.get<IBackendRes<IOrderType[]>>(urlBackend);
 }
 
 export const UpdateUserInfo = (fullName: string, phone: string, avatar: string, _id: string) => {
@@ -146,6 +146,16 @@ export const UpdateUserInfo = (fullName: string, phone: string, avatar: string, 
 export const changePasswordAPI = (email: string, oldpass: string, newpass: string) => {
     const urlBackend = `/api/v1/user/change-password`;
     return axios.post<IBackendRes<any>>(urlBackend, { email, oldpass, newpass });
+}
+
+export const getOrderAPI = (query: string) => {
+    const urlBackend = `/api/v1/order?${query}`;
+    return axios.get<IBackendRes<IModelPaginate<IOrderType>>>(urlBackend);
+}
+
+export const getDashboardAPI = () => {
+    const urlBackend = `/api/v1/database/dashboard`;
+    return axios.get<IBackendRes<IDashboardType>>(urlBackend);
 }
 
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }
