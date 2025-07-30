@@ -43,11 +43,14 @@ export const DetailOrder = () => {
 
                         <Row>
                             <Col span={24}>
-                                <div className=" bg-white flex justify-center items-center rounded-2xl mt-4 h-[60vh]">
-                                    <ShoppingCartOutlined style={{ fontSize: '100px' }} />
-                                    <div className="text-2xl text-black">
-                                        Empty
+                                <div className=" bg-white flex justify-center items-center rounded-2xl mt-4 h-[60vh] flex-col">
+                                    <div className="flex items-center mb-4">
+                                        <ShoppingCartOutlined style={{ fontSize: '100px' }} />
+                                        <span className="text-2xl text-black">
+                                            Empty
+                                        </span>
                                     </div>
+                                    <Button type="primary"><NavLink to={'/'}>Go to homepage</NavLink></Button>
                                 </div>
                             </Col>
                         </Row>
