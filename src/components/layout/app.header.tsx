@@ -9,12 +9,14 @@ import './app.header.scss';
 import { Link } from 'react-router-dom';
 import { useCurrentApp } from 'components/context/app.context';
 import { logoutAPI } from 'services/api';
+import { ManageUser } from '../clients/users/manage.account';
 
 
 const AppHeader = () => {
     const [openDrawer, setOpenDrawer] = useState(false);
     const { isAuthenticated, setIsAuthenticated, user, setUser, shoppingCart } = useCurrentApp();
     const navigate = useNavigate();
+    const [openUserModal, setOpenUserModal] = useState<boolean>(false);
 
     const handleLogout = async () => {
         const result = await logoutAPI();
@@ -33,8 +35,9 @@ const AppHeader = () => {
         {
             label: <label
                 style={{ cursor: 'pointer' }}
-                onClick={() => alert("me")}
-            >Quản lý tài khoản</label>,
+                onClick={() => setOpenUserModal(true)}
+            >
+                Quản lý tài khoản</label>,
             key: 'account',
         },
         {
@@ -97,6 +100,7 @@ const AppHeader = () => {
             </>
         )
     }
+
     return (
         <>
             <div className='header-container'>
@@ -169,7 +173,10 @@ const AppHeader = () => {
                 <p onClick={() => handleLogout()}>Đăng xuất</p>
                 <Divider />
             </Drawer>
-
+            <ManageUser
+                openUserModal={openUserModal}
+                setOpenUserModal={setOpenUserModal}
+            />
         </>
     )
 }

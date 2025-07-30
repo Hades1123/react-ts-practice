@@ -138,4 +138,14 @@ export const getOrderHistoryAPI = () => {
     return axios.get<IBackendRes<IOrderHistoryType[]>>(urlBackend);
 }
 
+export const UpdateUserInfo = (fullName: string, phone: string, avatar: string, _id: string) => {
+    const urlBackend = `/api/v1/user`;
+    return axios.put<IBackendRes<any>>(urlBackend, { fullName, phone, avatar, _id });
+}
+
+export const changePasswordAPI = (email: string, oldpass: string, newpass: string) => {
+    const urlBackend = `/api/v1/user/change-password`;
+    return axios.post<IBackendRes<any>>(urlBackend, { email, oldpass, newpass });
+}
+
 export { loginAPI, registerAPI, fetchAccountAPI, logoutAPI, getUserAPI, createUserAPI, createListUsers }
