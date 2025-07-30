@@ -1,20 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaReact } from 'react-icons/fa'
 import { FiShoppingCart } from 'react-icons/fi';
 import { VscSearchFuzzy } from 'react-icons/vsc';
-import { Divider, Badge, Drawer, Avatar, Popover } from 'antd';
+import { Divider, Badge, Drawer, Avatar, Popover, Button } from 'antd';
 import { Dropdown, Space } from 'antd';
 import { useNavigate } from 'react-router';
 import './app.header.scss';
 import { Link } from 'react-router-dom';
 import { useCurrentApp } from 'components/context/app.context';
-import { logoutAPI } from 'services/api';
+import { fetchAccountAPI, logoutAPI } from 'services/api';
 import { ManageUser } from '../clients/users/manage.account';
 
 
 const AppHeader = () => {
     const [openDrawer, setOpenDrawer] = useState(false);
-    const { isAuthenticated, setIsAuthenticated, user, setUser, shoppingCart } = useCurrentApp();
+    const { isAuthenticated, setIsAuthenticated, user, setUser, shoppingCart, setShoppingCart } = useCurrentApp();
     const navigate = useNavigate();
     const [openUserModal, setOpenUserModal] = useState<boolean>(false);
 
@@ -24,6 +24,8 @@ const AppHeader = () => {
             setUser(null);
             setIsAuthenticated(false);
             localStorage.removeItem('access_token');
+            localStorage.removeItem('cart');
+            setShoppingCart([]);
         }
     }
 
@@ -101,6 +103,16 @@ const AppHeader = () => {
         )
     }
 
+    // useEffect(() => {
+    //     const loadData = async () => {
+    //         const result = await fetchAccountAPI();
+    //         if (result.data) {
+    //             setUser(result.data.user);
+    //         }
+    //     }
+    //     loadData();
+    // }, [])
+
     return (
         <>
             <div className='header-container'>
@@ -147,7 +159,7 @@ const AppHeader = () => {
                             <li className="navigation__item mobile"><Divider type='vertical' /></li>
                             <li className="navigation__item mobile">
                                 {!isAuthenticated ?
-                                    <span onClick={() => navigate('/login')}> Tài Khoản</span>
+                                    <Button onClick={() => navigate('/login')} type='primary'> Login</Button>
                                     :
                                     <Dropdown menu={{ items }} trigger={['click']}>
                                         <Space >

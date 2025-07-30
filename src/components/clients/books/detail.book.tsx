@@ -1,4 +1,4 @@
-import { Row, Col, Rate, Divider, App } from 'antd';
+import { Row, Col, Rate, Divider, App, Breadcrumb } from 'antd';
 import ImageGallery from 'react-image-gallery';
 import { useRef, useState } from 'react';
 import { MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
@@ -6,6 +6,7 @@ import 'styles/book.scss';
 import buttonStyles from 'styles/button.module.scss'
 import { ModalGallery } from './modal.gallery';
 import { useCurrentApp } from '@/components/context/app.context';
+import { useNavigate } from 'react-router-dom';
 
 
 interface IProps {
@@ -23,8 +24,9 @@ export const DetailBook = (props: IProps) => {
     const refGallery = useRef<ImageGallery>(null);
     const refGalleryDesktop = useRef<ImageGallery>(null);
     const [quantity, setQuantity] = useState<number | string>(1);
-    const { setShoppingCart } = useCurrentApp();
+    const { setShoppingCart, isAuthenticated } = useCurrentApp();
     const { message } = App.useApp();
+    const navigate = useNavigate();
 
     const images = [currentBook?.thumbnail, ...currentBook?.slider ?? []].map((item) => {
         return {
@@ -73,45 +75,66 @@ export const DetailBook = (props: IProps) => {
         }
     }
 
-    const onClickCart = () => {
-        let storeShoppingCart = localStorage.getItem('cart')
-        if (!storeShoppingCart) {
-            localStorage.setItem('cart', JSON.stringify([{
-                _id: currentBook?._id!,
-                quantity: +quantity,
-                detail: currentBook
-            }]))
-            setShoppingCart([{
-                _id: currentBook?._id!,
-                quantity: +quantity,
-                detail: currentBook
-            }])
-        }
-        else {
-            let found = false;
-            const currentStorage = JSON.parse(localStorage.getItem('cart')!) as IShoppingCart[];
-            currentStorage.forEach(item => {
-                if (item._id === currentBook?._id) {
-                    item.quantity += +quantity;
-                    found = true;
-                    localStorage.setItem('cart', JSON.stringify(currentStorage))
-                }
-            })
-            if (!found) {
-                localStorage.setItem('cart', JSON.stringify([...currentStorage, {
-                    _id: currentBook?._id,
+    const onClickCart = (isBuyNow: boolean) => {
+        if (!isAuthenticated) {
+            message.error('You must login first');
+        } else {
+            let storeShoppingCart = localStorage.getItem('cart')
+            if (!storeShoppingCart) {
+                localStorage.setItem('cart', JSON.stringify([{
+                    _id: currentBook?._id!,
                     quantity: +quantity,
-                    detail: currentBook,
+                    detail: currentBook
                 }]))
+                setShoppingCart([{
+                    _id: currentBook?._id!,
+                    quantity: +quantity,
+                    detail: currentBook
+                }])
             }
-            setShoppingCart(JSON.parse(localStorage.getItem('cart')!));
+            else {
+                let found = false;
+                const currentStorage = JSON.parse(localStorage.getItem('cart')!) as IShoppingCart[];
+                currentStorage.forEach(item => {
+                    if (item._id === currentBook?._id) {
+                        item.quantity += +quantity;
+                        found = true;
+                        localStorage.setItem('cart', JSON.stringify(currentStorage))
+                    }
+                })
+                if (!found) {
+                    localStorage.setItem('cart', JSON.stringify([...currentStorage, {
+                        _id: currentBook?._id,
+                        quantity: +quantity,
+                        detail: currentBook,
+                    }]))
+                }
+                setShoppingCart(JSON.parse(localStorage.getItem('cart')!));
+            }
+            if (!isBuyNow) {
+                message.success('Thêm vào giỏ hàng thành công!')
+            }
+            else {
+                navigate('/order');
+            }
         }
-        message.success('Thêm vào giỏ hàng thành công!')
     }
 
     return (
         <>
             <div className='bg-[#efefef] p-5'>
+                <Breadcrumb
+                    separator=">"
+                    items={[
+                        {
+                            title: 'Home',
+                            href: '/',
+                        },
+                        {
+                            title: 'Detail book',
+                        },
+                    ]}
+                />
                 <div className='mx-auto min-h-[calc(100vh-150px)]'>
                     <div className='p-5 bg-[#fff] rounded-[5px]'>
                         <Row gutter={[20, 20]}>
@@ -176,8 +199,8 @@ export const DetailBook = (props: IProps) => {
                                         ><MinusOutlined /></button>
                                     </span>
                                     <div className='flex gap-8 mt-16'>
-                                        <button className={buttonStyles.cart} onClick={onClickCart}><ShoppingCartOutlined /> Add to cart</button>
-                                        <button className={buttonStyles.buy}>Buy</button>
+                                        <button className={buttonStyles.cart} onClick={() => onClickCart(false)}><ShoppingCartOutlined /> Add to cart</button>
+                                        <button className={buttonStyles.buy} onClick={() => onClickCart(true)}>Buy now</button>
                                     </div>
                                 </Col>
                             </Col>
